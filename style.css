@@ -84,7 +84,7 @@ div.gallery .image-caption, div.gallery img {
 
 /* blur the image */
 .image-container:hover img {
-    webkit-filter: blur(4px) brightness(50%); /* Chrome + Safari */
+    /* webkit-filter: blur(4px) brightness(50%); */
     filter: blur(4px) brightness(50%);
 }
 
