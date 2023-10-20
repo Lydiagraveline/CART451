@@ -1,3 +1,11 @@
+* {
+  margin: 0;
+  /* overflow: hidden; */
+  /* overflow-x: hidden; */
+  
+}
+
+
 body{
   font-family: 'Roboto', sans-serif;
 }
@@ -20,20 +28,22 @@ input[type='button']{
 }
 
 #parentContainer{
-  width:100%;
+  width:auto;
   background: #eeeeee;
   margin-top:2%;
-  padding:20px;
-  
+  padding:20px; 
 }
     
 .addIn,.searchDiv{
   background:#b82e8a;
   border: 1px solid  #ebadd6;
-  min-width:40%;
-  width:max-content;
+  /* width: auto; */
+  /* min-width:40%; */
+  /* margin: 20px; */
+  /* width:max-content; */
   padding:1%;
-  height:min-content;
+  /* height:min-content; */
+  
 }
 
 .addIn p, .searchDiv p {
@@ -41,9 +51,44 @@ input[type='button']{
   font-size:16px;
 }
 
+
+
+#responseContainer p {
+  /* background:#ebadd6; */
+  margin: 10px;
+  /* border-bottom: 2px dotted #ebadd6; */
+  /* border: 2px solid red; */
+  /* text-overflow: ellipsis; */
+  /* color: green; */
+}
+
 .title{
 display:inline-block;
 color:#555555;
 background:#ebadd6;
-margin:5px;    
+/* margin:5px;     */
+}
+
+.collapsible {
+  background-color: #777;
+  color: white;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+.active, .collapsible:hover {
+  background-color: #555;
+}
+
+.content {
+  padding: 0 18px;
+  /* display: none; */
+  /* display: block; */
+  overflow: hidden;
+  background-color: #f1f1f1;
 }

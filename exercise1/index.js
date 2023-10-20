@@ -39,9 +39,9 @@ async function run() {
 
         let regexM = new RegExp(req.query.exp);
         let projected_out = await post.aggregate([
-          { $match : { postTitle : regexM} },
-          { $project : { _id : 0, postTitle : 1, postBody : 1, numComments : 1 } }
-
+          { $match: { $and: [{ postTitle: regexM }, { postBody: regexM }] }},
+          { $project : { _id : 0, postTitle : 1, postBody : 1, numComments : 1 } },
+          {$limit:10}
         ]).toArray();
         console.log(projected_out);
         res.send(projected_out);
