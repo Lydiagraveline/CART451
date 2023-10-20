@@ -15,7 +15,6 @@ app.use("/client", clientRoute);
 
 require("dotenv").config();
 
-//app.use("/client", clientRoute);
 app.listen(portNumber, function () {
   console.log("Server is running on port "+portNumber);
 });
@@ -33,14 +32,27 @@ async function run() {
     client.connect().then((res) => {
       console.log("connected");
 
-    })
+      const database = client.db("reddit_posts");
+      const post = database.collection("helpfulRedditPosts");
 
+      let getSearchCrit = async function (req, res) {
 
+        let regexM = new RegExp(req.query.exp);
+        let projected_out = await post.aggregate([
+          { $match : { postTitle : regexM} },
+          { $project : { _id : 0, postTitle : 1, postBody : 1, numComments : 1 } }
+
+        ]).toArray();
+        console.log(projected_out);
+        res.send(projected_out);
+      };
+      //receiving serach criteria from the client
+      app.use("/sendSearch", getSearchCrit);
+    });
   } 
   catch(error) {
     console.error("error::");
     console.log(error);
-
   }
   finally {
     await client.close();
@@ -48,6 +60,11 @@ async function run() {
 }
 
 run();
+
+//default route
+app.get("/", function (req, res) {
+  res.send("<h1>Hello world</h1>");
+});
 
 function clientRoute(req, res, next) {
   res.sendFile(__dirname + "/public/client.html");
