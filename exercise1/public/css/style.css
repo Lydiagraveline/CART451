@@ -30,7 +30,7 @@ input[type='button']{
 #parentContainer{
   width:auto;
   background: #eeeeee;
-  margin-top:2%;
+  /* margin-top:2%; */
   padding:20px; 
 }
     
@@ -69,6 +69,8 @@ background:#ebadd6;
 /* margin:5px;     */
 }
 
+/* collapsible based on tutorial: */
+/* https://www.w3schools.com/howto/howto_js_collapsible.asp */
 .collapsible {
   background-color: #777;
   color: white;
@@ -91,4 +93,9 @@ background:#ebadd6;
   /* display: block; */
   overflow: hidden;
   background-color: #f1f1f1;
+}
+
+.highlight{
+  color:black;
+  font-weight: bold;
 }

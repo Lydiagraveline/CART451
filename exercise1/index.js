@@ -3,7 +3,6 @@ const portNumber = 8080;
 const app = express(); //make an instance of express
 const server = require("http").createServer(app);
 
-
 // create a server (using the Express framework object)
 app.use(express.static(__dirname + "/public"));
 
@@ -41,7 +40,7 @@ async function run() {
         let projected_out = await post.aggregate([
           { $match: { $and: [{ postTitle: regexM }, { postBody: regexM }] }},
           { $project : { _id : 0, postTitle : 1, postBody : 1, numComments : 1 } },
-          {$limit:10}
+          {$limit:20}
         ]).toArray();
         console.log(projected_out);
         res.send(projected_out);
@@ -69,54 +68,3 @@ app.get("/", function (req, res) {
 function clientRoute(req, res, next) {
   res.sendFile(__dirname + "/public/client.html");
 }
-
-
-
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-// const client = new MongoClient(url, {});
-// async function run(){
-//     try {
-//         client.connect();
-//         console.log("connected");
-
-//         // await listDatabases(client);
-//        // let db = await client.db("reddit_posts"); //reference the database
-//         //let helpful = await db.collection("helpfulRedditPosts"); // the collection
-
-
-//         //let query = await collection.findOne({"postTitle": {$regex: "groceries", "$options": "i"}});
-//        // let query = await helpful.aggregate([{ $sample: { size: 1 } } ]);
-//        // console.log(query);
-
-//     } catch {
-//         console.error(e);
-//     } finally{
-//         await client.close();
-//     }
-// }
-
-// call the function
-///run().catch(console.error);
-
-// async function listDatabases(client){
-//     const databasesList = await client.db().admin().listDatabases();
-//     //console.log("Databases:");
-//     databasesList.databases.forEach(db => {
-//        // console.log(`- ${db.name}`);
-//     })
-// }
-
-// make server listen for incoming messages
-// server.listen(portNumber, function () {
-//     console.log("listening on port:: " + portNumber);
-//   });
-
-//default route
-// app.get("/", function (req, res) {
-//     res.send("<h1>Hello world</h1>");
-//   });
-
-
-  // function clientRoute(req, res, next) {
-  //   res.sendFile(__dirname + "/public/client.html");
-  // }
