@@ -16,6 +16,7 @@ require("dotenv").config();
 
 app.listen(portNumber, function () {
   console.log("Server is running on port "+portNumber);
+
 });
 
 //tutorial https://www.mongodb.com/developer/languages/javascript/node-crud-tutorial/
@@ -26,24 +27,70 @@ const url = process.env.MONGO_DB_URI;
 const client = new MongoClient(url, {});
 
 async function run() {
-  try {
+  try { 
     // Connect the client to the server	(optional starting in v4.7)
     client.connect().then((res) => {
       console.log("connected");
 
       const database = client.db("reddit_posts");
       const post = database.collection("helpfulRedditPosts");
-
       let getSearchCrit = async function (req, res) {
+        let searchText = req.query.exp;
+        let sortMethod = req.query.sortMethod; // Retrieve the sortMethod parameter
 
+        let sortField = 'searchScore'; // Default sorting field
+        //console.log(sortMethod);
+        if (sortMethod === 'rSort') {
+          sortField = 'searchScore'; // Sort by post title
+        } else if (sortMethod === 'pSort') {
+          sortField = 'score'; // Sort by author
+        } else if (sortMethod === 'random'){
+          console.log("RANDOM!!")
+        }
+        
+        // Add more conditions as needed for other sorting options
+   
+        //console.log(sortField);
+    
         let regexM = new RegExp(req.query.exp);
         let projected_out = await post.aggregate([
-          { $match: { $and: [{ postTitle: regexM }, { postBody: regexM }] }},
-          { $project : { _id : 0, postTitle : 1, postBody : 1, numComments : 1 } },
-          {$limit:20}
+          { 
+            $match: { 
+              $text: { $search: searchText }
+            }
+          },
+          {
+            $addFields: { 
+              searchScore: { $meta: "textScore" } 
+            }
+          },
+          { $project : { _id : 0, postTitle : 1, postBody : 1,author : 1, score: 1, numComments : 1, searchScore: 1} },
+          {
+            $sort: {
+              [sortField]: -1 
+            }
+          },
+          {$limit:10}
         ]).toArray();
-        console.log(projected_out);
-        res.send(projected_out);
+
+        //random 
+        // Count the total number of documents in the collection
+        const totalDocuments = await post.countDocuments();
+        // Generate a random number within the range of document indices
+        const randomIndex = Math.floor(Math.random() * totalDocuments);
+        // Query the database to retrieve a random document using the random index
+        const randomObject = await post.find().skip(randomIndex).limit(1).toArray();
+        
+        if (sortMethod === 'random'){
+          res.send(randomObject);
+        } else {
+          res.send(projected_out);
+        }
+        
+        
+        //res.send(randomObject);
+
+       
       };
       //receiving serach criteria from the client
       app.use("/sendSearch", getSearchCrit);
@@ -67,4 +114,11 @@ app.get("/", function (req, res) {
 
 function clientRoute(req, res, next) {
   res.sendFile(__dirname + "/public/client.html");
+}
+
+async function getRandomObject(){
+          const database = client.db("reddit_posts");
+          const post = database.collection("helpfulRedditPosts");
+
+        
 }

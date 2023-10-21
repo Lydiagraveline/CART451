@@ -95,7 +95,29 @@ background:#ebadd6;
   background-color: #f1f1f1;
 }
 
-.highlight{
-  color:black;
-  font-weight: bold;
+.searchBar {
+  background: white;
+
 }
+
+.tag {
+  background: white;
+  margin: 5px;
+}
+
+.tag:hover{
+  background-color: #f1f1f1;
+}
+
+input[name="search"] {
+  padding: 10px;
+  border: 1px solid transparent;
+  font-size: 16px;
+  background: white;
+}
+
+
+
+  
+
+

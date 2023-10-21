@@ -15,9 +15,24 @@
     <!-- <h2>SAMPLE SEARCH FORM:: get results from regex</h2> -->
     <div id = "parentContainer">
     <div class = "searchDiv">
-      <input type="text" id="inputRegex" placeholder="/Maria/" />
-      <input type="button" value="Find Advice" id="findData" />
-    </div>
+      <input type="text" id="inputRegex" placeholder="Sleep" />
+      <form class="sort" >
+        <select size="1" name="Sort by" id="sortSelect">
+           <option selected="selected" value='rSort'>relevance</option>
+           <option value='pSort'>post score</option>
+           <!-- <option selected="selected" value=1>relevance</option>
+           <option value= -1 >post score</option> -->
+        </select>
+    </form>
+      <input type="button" value="search" id="findData" />
+      <input type="button" value="Random" id="findRandom" />
+    </div> 
+
+    <!-- <div class="searchTag"> -->
+      <!-- <span class="tag">test<span class="remove"></span></span> -->
+      <!-- <span class="tag">cloud<span class="remove"></span></span> -->
+      <!-- <input type="text" name="search" placeholder="" size="1"> -->
+    <!-- </div> -->
 
     <div id = "response" class = 'searchDiv'> 
     <div id = "responseContainer" >
