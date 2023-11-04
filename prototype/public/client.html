@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>p5.js MongoDB Visualization</title>
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+</head>
+<body>
+  <div id="visualization-container"></div>
+  <script>
+    let data;
+    var pgPos = 0;
+
+    function setup() {
+      createCanvas(600, 600);
+      loadJSON('/data', (response) => {
+        data = response;
+      });
+    }
+
+    function draw() {
+      background(220);
+      translate(0, pgPos); 
+      if (data) {
+       // console.log(data);
+        // Your data visualization code here
+        fill(0);
+        textSize(16);
+        text('Data from MongoDB:', 10, 20);
+
+        for (let i = 0; i < data.length; i++) {
+        const sourceSite = data[i].source.site;
+        const sourceAccount = data[i].source.account;
+        const customAudiences = data[i].custom_audiences;
+        // Display source information
+      //  text(`Source Site: ${sourceSite}`, 10, 50 + i * 60);
+       // text(`Source Account: ${sourceAccount}`, 10, 70 + i * 60);
+       
+        // Display custom audiences information
+        //text('Custom Audiences:', 10, 90 + i * 60);
+
+        let yOffset = 40; // Initial Y-coordinate
+        let xOffset = 40; // Initial Y-coordinate
+
+        for (let i = 0; i < data.length; i++) {
+        const customAudiences = data[i].custom_audiences;
+
+        for (let j = 0; j < customAudiences.length; j++) {
+        text(`${customAudiences[j].advertiser_name}`, 30, yOffset);
+       // text(`Has Data File Custom Audience: ${customAudiences[j].has_data_file_custom_audience}`, 30, yOffset + 20);
+       // text(`Has Remarketing Custom Audience: ${customAudiences[j].has_remarketing_custom_audience}`, 30, yOffset + 40);
+       // text(`Has In Person Store Visit: ${customAudiences[j].has_in_person_store_visit}`, 30, yOffset + 60);
+    
+        // Increment the yOffset for the next set of data
+         yOffset += 20;
+         }
+  
+  // Add some space between different sets of data
+  yOffset += 20;
+}
+
+
+    }
+
+
+      }
+      else {
+        text('no data', 10, 30);
+      }
+    }
+
+
+    function mouseWheel(event) {
+//let scrollAmt=constrain(event.delta, -scrollMax, scrollMax) 
+  pgPos += event.delta;
+
+}
+  </script>
+</body>
+</html>

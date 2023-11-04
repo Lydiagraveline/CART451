@@ -1,0 +1,7 @@
+body {
+overflow: hidden;
+}
+
+#p5Canvas {
+position: fixed;
+}

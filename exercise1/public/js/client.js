@@ -12,7 +12,7 @@ document.querySelector("#findData").addEventListener(
   "click",
   async function () {
     //let random = false;
-    let exp = document.querySelector("#inputRegex").value;
+     
     let sortMethod = document.querySelector("#sortSelect").value; 
     let response = await fetch(
     `http://localhost:8080/sendSearch?${new URLSearchParams({exp, sortMethod})}`
