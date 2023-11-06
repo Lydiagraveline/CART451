@@ -31,10 +31,12 @@ function initializeCanvas(sketch) {
   }
 
 let index;
+let randomIndex;
+let mappedIndex;
 let customAudiences = []; // Declare customAudiences as a global variable
 let advertiserNames = [];
-let randomAdvertiser = " ";
-let text2 = 'hi';
+let randomAdvertiser = 'hi';
+let site = 'hi';
 
 let pgPos = 0; //for scrolling
   
@@ -57,45 +59,31 @@ let pgPos = 0; //for scrolling
         s.textSize(24);
         s.textAlign(s.CENTER);
         s.text(randomAdvertiser , s.width/2, s.height/2);
-        // s.text(text, s.width/2, s.height/2);
-        
-      
-        // s.text(customAudiences[mappedIndex].advertiser_name, s.width / 2, s.height / 2);
          s.textSize(16);
-         s.text(text2, s.width/2, s.height/2 + 25);
+         s.text(site, s.width/2, s.height/2 + 25);
          }; //draw
 
-         s.mouseMoved= function() {
-            let randomIndex =  s.int(s.map(s.mouseX, 0, s.width, 0,data.length));
-            //console.log(randomIndex);
-            customAudiences = data[randomIndex].custom_audiences;
-             let mappedIndex = s.int(s.map(s.mouseY, 0, s.height, 0, customAudiences.length));
-             console.log(mappedIndex);
-             randomAdvertiser = customAudiences[mappedIndex].advertiser_name;
-             let site = data[randomIndex].source.site;
-
-             text = randomAdvertiser;
-             text2 = site;
+         s.mouseMoved = function() {
+          //check if mouse is within the bounds of the canvas
+            if (0 < s.mouseX && s.mouseX < s.width ){
+              if (0 < s.mouseY && s.mouseY < s.height ){
+                randomIndex =  s.int(s.map(s.mouseX, 0, s.width, 0,data.length));
+                customAudiences = data[randomIndex].custom_audiences;
+                mappedIndex = s.int(s.map(s.mouseY, 0, s.height, 0, customAudiences.length));
+                randomAdvertiser = customAudiences[mappedIndex].advertiser_name;
+                site = data[randomIndex].source.site;
+              }
+            } else {
+              console.log("out of bounds");
+            }
          };
-
-    s.mousePressed = function() {
-        index = 0;
-    //     let randomIndex = s.floor(s.random(data.length));
-    //    // console.log(randomIndex);
-    //     customAudiences = data[randomIndex].custom_audiences;
-    //     let randomAdvertiserIndex = s.floor(s.random(customAudiences.length));
-    //     randomAdvertiser = customAudiences[randomAdvertiserIndex].advertiser_name;
-    //     let site = data[randomIndex].source.site;
-
-    //     text = randomAdvertiser;
-    //     text2 = site;
-        if (index == advertiserNames.length) {
-          index = 0;
-        }
-     }; //mousepress
 
   };
 
+
+let dots = [];
+let data_count = 1;  //Initializing data_count, how many data lines to read
+let planet_dist;     //The distance between a planet and user's mouse 
 
 
 
@@ -103,6 +91,67 @@ let pgPos = 0; //for scrolling
   
   // Second Sketch
   var secondSketch = function(s) {
-    initializeCanvas(s);
-  };
+    s.setup = function(){
+      s.createCanvas(400, 400);
+      s.background(100);
+  }
+
+  s.draw = function(){
+      s.background(199,21,133);
+      s.fill(255,255,255);
+      s.textSize(24);
+      s.textAlign(s.CENTER);
+      //s.text(randomAdvertiser , s.width/2, s.height/2);
+       s.textSize(16);
+     //  s.text(site, s.width/2, s.height/2 + 25);
+       }; //draw
+
+
+       class Advertiser {
+        constructor() {
+          this.x;                  //X coordinate for the planet                    
+          this.y;                  //Y coordinate for the planet 
+          this.radius;      //Radius of the planet image
+         // this.design_num;         //Type of planet design from planet_designs
+          //this.data;               //String data of the planet
+         //this.data_split;         //Splits the data into an array of its data
+          
+          this.init();
+          this.printData();
+        }
+
+          //This function initializes all the variables for each exoplanet.
+  init() {
+    //this.design_num = int(random(5));
+    this.radius = 10;
+    
+    this.x = mouseX;
+    this.y = mouseY;
+    
+    // this.data = exoplanet_data[data_count];
+    // this.data_split = split(this.data, ',');
+    // if(data_count != exoplanet_data.length) {
+    //   data_count++;
+    // }
+    // else {
+    //   print("All planets printed!");
+    // }
+  }
+
+  draw() {
+   // image(planet_designs[this.design_num], this.x, this.y, planet_designs[this.design_num].width/5, planet_designs[this.design_num].height/5); 
+   ellipse(this.x, this.y, this.radius);  
+  }
+
+
+
+      }
+
+      
+
+};
+
+
+
+  
   var myp5_2 = new p5(secondSketch, 'c2');
