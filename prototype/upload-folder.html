@@ -1,0 +1,65 @@
+<!DOCTYPE html> 
+<html>
+  <head>
+    <title>Upload Folder</title>
+  </head>
+  <body>
+    <h1>Upload a Folder</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+      <input type="file" name="directory" id="directoryInput" webkitdirectory directory multiple>
+      <button type="submit">Upload Folder</button>
+    </form>
+    <pre id="jsonOutput"></pre>
+
+    <script>
+      const uploadForm = document.getElementById('uploadForm');
+      const directoryInput = document.getElementById('directoryInput');
+      const jsonOutput = document.getElementById('jsonOutput');
+  
+
+
+      uploadForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        console.log("submitting....");
+
+        const formData = new FormData();
+        //formData.append('directory', directoryInput.files[0]);
+        //console.log(this.files.name);
+        // Loop through all selected files
+        for (let i = 0; i < directoryInput.files.length; i++) {
+           const file = directoryInput.files[i];
+        //   formData.append('directory[]', file); // Use array notation to accept multiple files
+        console.log(file);
+        }
+
+        // const inps = document.querySelectorAll("input[type='file']");
+
+        // for (let i = 0; i < inps.length; i++) {
+        // const iptEl = inps[i];
+        // iptEl.onchange = function (e) {
+        // console.log(this.files);
+        // };
+        // }
+
+
+        // try {
+        //   const response = await fetch('/uploads', {
+        //     method: 'POST',
+        //     body: formData,
+        //   });
+
+        //   if (response.ok) {
+        //     //const jsonData = await response.text();
+        //     //jsonOutput.textContent = jsonData;
+        //     console.log("ok!");
+        //   } else {
+        //     jsonOutput.textContent = 'Error: ' + response.status;
+        //   }
+        // } catch (error) {
+        //   console.error(error);
+        //   jsonOutput.textContent = 'An error occurred.';
+        // }
+      });
+    </script>
+  </body>
+</html>
