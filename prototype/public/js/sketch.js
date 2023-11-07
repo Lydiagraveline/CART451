@@ -27,8 +27,10 @@ getRandomAdvertiser = function (s, data) {
 };
 
 getRandomTopic = function (s, data) {
-let randomIndex = s.int(s.map(s.mouseX, 0, s.width, 0, data.length));
-let mappedIndex = s.int(s.map(s.mouseY, 0, s.height, 0, customAudiences.length));
+  
+let randomIndex = s.int(s.map(s.mouseX, 0, s.width, 0,  data.length));
+console.log( data[randomIndex].topic.length);
+let mappedIndex = s.int(s.map(s.mouseY, 0, s.height, 0,  data[randomIndex].topic.length));
 randTopic = data[randomIndex].topic[mappedIndex];
 let sourceSite = data[randomIndex].source.site;
   return{
@@ -304,4 +306,100 @@ var myp5_2 = new p5(secondSketch, 'c2');
   };
 
 var myp5_3 = new p5(thirdSketch, 'c3');
+
+//////////////////////////////////////////////////////////////////
+//                 THE FOURTH SKETCH                            //
+//////////////////////////////////////////////////////////////////
+
+
+  
+  // Second Sketch
+  var fourthSketch = function(s) {
+
+    let myAdvertisers = [];
+  let distance;   
+let data;
+  s.preload = function() {
+    data = s.loadJSON('/data', (result) => {
+      if (result) {
+        data = result.data2;
+      //  console.log(data);
+      } else {
+        console.error('Data not found');
+      }
+    });
+  }
+
+    s.setup = function(){
+      s.createCanvas(400, 400);
+  }
+
+  s.draw = function(){
+      s.background(255, 255, 255);
+      s.fill(0,0,0);
+      //s.textSize(24);
+      s.textAlign(s.CENTER);
+      //s.text(randomAdvertiser , s.width/2, s.height/2);
+      s.textSize(10);
+      s.text("click!", s.width/2, s.height/2 + 25);
+       
+      //Here we continuously draw the planets on the canvas
+  for(let i=0; i<myAdvertisers.length; i++) {
+    myAdvertisers[i].draw();
+    //console.log("call draw");
+    distance = s.dist(myAdvertisers[i].x, myAdvertisers[i].y, s.mouseX, s.mouseY);
+    myAdvertisers[i].displayData();
+
+
+  if(distance < myAdvertisers[i].radius) {
+  // myAdvertisers[i].displayData();
+
+    }
+  }
+    }; //draw
+
+s.mouseClicked = function() {
+  if (isMouseWithinCanvas(s)) {
+  //const result = getRandomAdvertiser(s);
+  s.append(myAdvertisers, new Topic());
+  }
+}
+
+class Topic {
+  constructor() {
+    this.x;                          
+    this.y;      
+    this.radius;      
+    this.name = getRandomTopic(s, data).value;
+          
+    this.init();
+  }
+
+  init() {
+    //this.design_num = int(random(5));
+    this.radius = s.random(20, 50);
+    
+    this.x = s.mouseX;
+    this.y = s.mouseY;
+  }
+
+  draw() {
+   s.fill(255,255,255);
+   s.ellipse(this.x, this.y, this.radius);  
+  }
+
+  displayData() {
+    s.fill(255, 255, 255);
+    //s.rect(s.mouseX, s.mouseY, 500, 120);
+    
+    s.textAlign(s.CENTER);
+    s.fill("black");
+    
+    s.text(this.name,this.x, this.y);
+    //s.text(this.name,s.mouseX+this.radius, s.mouseY+20);
+    this.radius += 1;
+  }
+}
+};
+var myp5_4 = new p5(fourthSketch, 'c4');
  

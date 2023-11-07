@@ -13,6 +13,13 @@ html, body {
     align-items: center;
   }
 
+.container{
+    background-color: blueviolet;
+    padding: 1px;
+    /* padding: 10px;
+    margin: 25px; */
+}
+
 #p5Canvas {
 position: fixed;
 }
