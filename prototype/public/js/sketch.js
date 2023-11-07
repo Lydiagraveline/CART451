@@ -30,16 +30,20 @@ function initializeCanvas(sketch) {
     };
   }
 
-let index;
-let randomIndex;
-let mappedIndex;
+//let index;
+// let randomIndex;
+//let mappedIndex;
 let customAudiences = []; // Declare customAudiences as a global variable
 let advertiserNames = [];
-let randomAdvertiser = 'hi';
-let site = 'hi';
-
-let pgPos = 0; //for scrolling
+//let randomAdvertiser = 'hi';
+//let site = 'hi';
   
+
+//////////////////////////////////////////////////////////////////
+//                 THE FIRST SKETCH                             //
+//////////////////////////////////////////////////////////////////
+
+
   // First Sketch
   var firstSketch = function(s) {
     initializeCanvas(s);
@@ -53,33 +57,24 @@ let pgPos = 0; //for scrolling
         };
     }
 
+    let text = 'move mouse';
+    let siteText = 'left and right and up and down';
     s.draw = function(){
         s.background(199,21,133);
         s.fill(255,255,255);
         s.textSize(24);
         s.textAlign(s.CENTER);
-        s.text(randomAdvertiser , s.width/2, s.height/2);
+        // s.text(randomAdvertiser, s.width/2, s.height/2);
+        s.text(text, s.width/2, s.height/2);
          s.textSize(16);
-         s.text(site, s.width/2, s.height/2 + 25);
+         s.text(siteText, s.width/2, s.height/2 + 25);
          }; //draw
 
-        //  s.mouseMoved = function() {
-        //   //check if mouse is within the bounds of the canvas
-        //     if (0 < s.mouseX && s.mouseX < s.width ){
-        //       if (0 < s.mouseY && s.mouseY < s.height ){
-        //         randomIndex =  s.int(s.map(s.mouseX, 0, s.width, 0,data.length));
-        //         customAudiences = data[randomIndex].custom_audiences;
-        //         mappedIndex = s.int(s.map(s.mouseY, 0, s.height, 0, customAudiences.length));
-        //         randomAdvertiser = customAudiences[mappedIndex].advertiser_name;
-        //         site = data[randomIndex].source.site;
-        //       }
-        //     } else {
-        //       console.log("out of bounds");
-        //     }
-        //  };
         s.mouseMoved = function() {
           if (isMouseWithinCanvas(s)) {
-            getRandomAdvertiser(s);
+            let result = getRandomAdvertiser(s);
+            text = result.name;
+            siteText = result.site;
           } else {
            // console.log("Out of bounds");
           }
@@ -92,22 +87,32 @@ let pgPos = 0; //for scrolling
   }
 
   getRandomAdvertiser = function (s) {
-    randomIndex = s.int(s.map(s.mouseX, 0, s.width, 0, data.length));
+    let randomIndex = s.int(s.map(s.mouseX, 0, s.width, 0, data.length));
     customAudiences = data[randomIndex].custom_audiences;
-    mappedIndex = s.int(s.map(s.mouseY, 0, s.height, 0, customAudiences.length));
-    randomAdvertiser = customAudiences[mappedIndex].advertiser_name;
-    site = data[randomIndex].source.site;
-    return randomAdvertiser;
+    let mappedIndex = s.int(s.map(s.mouseY, 0, s.height, 0, customAudiences.length));
+    let randomAdvertiser = customAudiences[mappedIndex].advertiser_name;
+    let sourceSite = data[randomIndex].source.site;
+    return{
+      name:randomAdvertiser,
+      site:sourceSite
+    };
+    //console.log(customAudiences);
+    //return randomAdvertiser;
   };
 
-
-let myAdvertisers = [];
-let distance;     //The distance between a planet and user's mouse 
+//////////////////////////////////////////////////////////////////
+//                 THE SECOND SKETCH                            //
+//////////////////////////////////////////////////////////////////
 
   var myp5 = new p5(firstSketch, 'c1');
   
   // Second Sketch
   var secondSketch = function(s) {
+
+    let myAdvertisers = [];
+  let distance;     
+
+
     s.setup = function(){
       s.createCanvas(400, 400);
   }
@@ -134,13 +139,13 @@ let distance;     //The distance between a planet and user's mouse
 
     }
   }
-
-    
     }; //draw
 
 s.mouseClicked = function() {
-  const result = getRandomAdvertiser(s);
+  if (isMouseWithinCanvas(s)) {
+  //const result = getRandomAdvertiser(s);
   s.append(myAdvertisers, new Advertiser());
+  }
 }
 
 class Advertiser {
@@ -148,7 +153,7 @@ class Advertiser {
     this.x;                          
     this.y;      
     this.radius;      
-    this.name = getRandomAdvertiser(s);
+    this.name = getRandomAdvertiser(s).name;
           
     this.init();
   }
@@ -179,6 +184,67 @@ class Advertiser {
   }
 }
 };
+var myp5_2 = new p5(secondSketch, 'c2');
 
 
-  var myp5_2 = new p5(secondSketch, 'c2');
+//////////////////////////////////////////////////////////////////
+//                 THE THIRDS SKETCH                            //
+//////////////////////////////////////////////////////////////////
+ // Third Sketch
+ var thirdSketch = function(s) {
+  initializeCanvas(s);
+
+  s.setup = function(){
+      s.createCanvas(400, 400);
+      s.background(100);
+      for (let i = 0; i < data.length; i++) {
+         // customAudiences = customAudiences.concat(data[i].custom_audiences);
+         // data[i].custom_audiences.forEach(collection => advertiserNames.push(collection.advertiser_name));
+      };
+  }
+
+  let text = 'move mouse';
+  let siteText = 'left and right and up and down';
+  s.draw = function(){
+      s.background(199,21,133);
+      s.fill(255,255,255);
+      s.textSize(24);
+      s.textAlign(s.CENTER);
+      // s.text(randomAdvertiser, s.width/2, s.height/2);
+      s.text(text, s.width/2, s.height/2);
+       s.textSize(16);
+       s.text(siteText, s.width/2, s.height/2 + 25);
+       }; //draw
+
+      s.mouseMoved = function() {
+        if (isMouseWithinCanvas(s)) {
+          let result = getRandomAdvertiser(s);
+          text = result.name;
+          siteText = result.site;
+        } else {
+         // console.log("Out of bounds");
+        }
+      }
+    
+};
+
+function isMouseWithinCanvas(s) {
+  return (0 < s.mouseX && s.mouseX < s.width) && (0 < s.mouseY && s.mouseY < s.height);
+}
+
+getRandomAdvertiser = function (s) {
+  let randomIndex = s.int(s.map(s.mouseX, 0, s.width, 0, data.length));
+  customAudiences = data[randomIndex].custom_audiences;
+  let mappedIndex = s.int(s.map(s.mouseY, 0, s.height, 0, customAudiences.length));
+  let randomAdvertiser = customAudiences[mappedIndex].advertiser_name;
+  let sourceSite = data[randomIndex].source.site;
+  return{
+    name:randomAdvertiser,
+    site:sourceSite
+  };
+  //console.log(customAudiences);
+  //return randomAdvertiser;
+};
+
+var myp5_3 = new p5(thirdSketch, 'c3');
+ 
