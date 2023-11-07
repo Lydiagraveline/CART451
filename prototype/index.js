@@ -15,13 +15,26 @@ app.use(express.static('public'));
       console.log("connected");
 
       const db = client.db('LydiasOnlineData');
-      const collection = db.collection('advertisers');
+      const AdvertisersCollection = db.collection('advertisers');
+      const inferencesCollection = db.collection('inferences');
   
-      const data = await collection.find({}).toArray();
+      const data1 = await AdvertisersCollection.find({}).toArray();
+      const data2 = await inferencesCollection.find({}).toArray();
+      const data = data1.concat(data2);
+      const combinedData = {
+        data1: data1,
+        data2: data2
+      };
+
+      
       if (data) {
-        console.log(`Found ${data.length} documents`);
+        //console.log(`Found ${data.length} advertiser documents`);
+        console.log(combinedData.data1);
       }
-      res.json(data);
+      if (data2) {
+        //console.log(`Found ${data2.length} inferences documents`);
+      }
+      res.json(combinedData);
     } catch (error) {
       console.error(error);
       res.status(500).send('Error fetching data');
