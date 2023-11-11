@@ -77,21 +77,23 @@ getMappedAdvertiser = function (s, data) {
   };
 };
 
-changeBg = function(bg, sourceSite, s){
+changeBg = function(startColor, sourceSite, s){
+  let newColor;
   if(sourceSite == "instagram"){
-    console.log("instagram");
-    bg = s.color(193, 53, 132);
+    //console.log("instagram");
+    newColor = s.color(193, 53, 132);
     } else if (sourceSite == "facebook"){
       //onsole.log("fb");
-      bg = s.color(66 ,103, 178);
+      newColor = s.color(66 ,103, 178);
     }else if (sourceSite == "twitter"){
       //console.log("twitter");
-      bg = s.color(29, 161, 242);
+      newColor = s.color(29, 161, 242);
     }else if (sourceSite == "pinterest"){
-      console.log("pin");
-      bg = s.color(230, 0, 35);
+      //console.log("pin");
+      newColor = s.color(230, 0, 35);
     }
-    return bg;
+    //color = lerpColor(startColor, newColor, amt);
+    return newColor;
 }
 //////////////////////////////////////////////////////////////////
 //                 THE FIRST SKETCH                             //
@@ -412,7 +414,7 @@ class Topic {
           
     this.init();
   }
-
+ç
   init() {
     //this.design_num = int(random(5));
     this.radius = s.random(20, 50);
