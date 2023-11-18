@@ -1,80 +1,3 @@
-//***************************************//
-//*************Orbit sketch*************//
-//**************************************//
-
-
-  // Define orbit data
-//   const orbitData = [
-//     { TA: 3.364406687861443E+02, A: 1.082074884029348E+08 },
-//     { TA: 3.365082014108534E+02, A: 1.082074874932650E+08 },
-//     { TA: 3.365757345666674E+02, A: 1.082074865865390E+08 },
-//     { TA: 3.366432682522504E+02, A: 1.082074856827587E+08 },
-//     { TA: 3.367108024662663E+02, A: 1.082074847819261E+08 },
-//     { TA: 3.367783372073731E+02, A: 1.082074838840426E+08 },
-//     { TA: 3.368458724742340E+02, A: 1.082074829891104E+08 },
-//     { TA: 3.369134082655075E+02, A: 1.082074820971311E+08 },
-//     { TA: 3.369809445798484E+02, A: 1.082074812081064E+08 },
-//     { TA: 3.370484814159161E+02, A: 1.082074803220382E+08 },
-//     { TA: 3.371160187723680E+02, A: 1.082074794389283E+08 },
-//     { TA: 3.371835566478499E+02, A: 1.082074785587782E+08 },
-//     { TA: 3.372510950410175E+02, A: 1.082074776815897E+08 },
-//     { TA: 3.373186339505240E+02, A: 1.082074768073647E+08 },
-//     { TA: 3.373861733750173E+02, A: 1.082074759361046E+08 },
-//     { TA: 3.374537133131458E+02, A: 1.082074750678113E+08 },
-//     { TA: 3.375212537635553E+02, A: 1.082074742024864E+08 },
-//     { TA: 3.375887947248888E+02, A: 1.082074733401314E+08 },
-//     { TA: 3.376563361957976E+02, A: 1.082074724807481E+08 },
-//     { TA: 3.377238781749242E+02, A: 1.082074716243383E+08 },
-//     { TA: 3.377914206609056E+02, A: 1.082074707709033E+08 },
-//     { TA: 3.378589636523841E+02, A: 1.082074699204447E+08 },
-//     { TA: 3.379265071480002E+02, A: 1.082074690729644E+08 },
-//     { TA: 3.379940511463926E+02, A: 1.082074682284638E+08 },
-//     { TA: 3.380615956461941E+02, A: 1.082074673869443E+08 },
-//     { TA: 3.381291406461769E+02, A: 1.082074665483182E+08 }
-//     // Add more data points as needed
-//   ];
-
-//       // Data
-//       const time = [2460262.5, 2460262.54, 2460262.58, 2460262.62, 2460262.67, 2460262.71, 2460262.75, 2460262.79, 2460262.83, 2460262.88, 2460262.92, 2460262.96, 2460263, 2460263.04, 2460263.08, 2460263.13, 2460263.17, 2460263.21, 2460263.25, 2460263.29, 2460263.33, 2460263.38, 2460263.42, 2460263.46, 2460263.5];
-//       const eccentricity = [6.738130829209159E-03, 6.738124572668056E-03, 6.738118335671727E-03, 6.738112118243478E-03, 6.738105920408658E-03, 6.738099742191551E-03, 6.738093583615592E-03, 6.738087444706527E-03, 6.738081325486645E-03, 6.738075225981252E-03, 6.738069146214817E-03, 6.738063086209784E-03, 6.738057045989468E-03, 6.738051025579249E-03, 6.738045025001735E-03, 6.738039044279926E-03, 6.73803308343749E-03, 6.738027142497279E-03, 6.738021221483386E-03, 6.738015320418358E-03, 6.738009439325006E-03, 6.738003578225056E-03];
-
-//   function setup() {
-//     createCanvas(400, 400);
-//     angleMode(DEGREES);
-//    //parseEphemerisData(inputText);
-//    //console.log(orbitalData);
-//     //time = orbitalData.time;
-//     //eccentricity = orbitalData.eccentricity;
-//   // const { time, eccentricity } = parseEphemerisData(inputText);
-
-// // console.log('Time:', time);
-// // console.log('Eccentricity:', eccentricity);
-//   }
-
-//   function draw() {
-//     background(255);
-//     translate(width / 2, height / 2);
-
-//     // Draw circle
-//     noFill();
-//     stroke(0);
-//     ellipse(0, 0, 300, 300);
-
-//     // Plot data points on the circle
-//     for (let i = 0; i < time.length; i++) {
-//       let angle = map(time[i], min(time), max(time), 0, 360);
-//       let radius = map(eccentricity[i], min(eccentricity), max(eccentricity), 50, 150);
-
-//       let x = radius * cos(angle);
-//       let y = radius * sin(angle);
-
-//       // Draw data points
-//       fill(0);
-//       ellipse(x, y, 8, 8);
-//     }
-//   }
-
-
 
 
 //***************************************//
@@ -139,13 +62,12 @@ function setup() {
   stepSlider = createSlider(0, 100, 0); // Set initial range, you can adjust this
   stepSlider.position(10, fetchDataButton.y + 25);
   stepSlider.input(updateSelectedDate); // Call updateSelectedDate when the slider is moved
-  stepSlider.input(updateDate);
     // Inside the setup() function
 selectedDate = createP('Selected Date: ');
 selectedDate.position(10, dataFormatInput.y + 3 * 25);
 }
 
-let speed = 1;
+
 // Draw function
 function draw() {
   fill(250);
@@ -159,7 +81,8 @@ function draw() {
   let sliderMin = stepSlider.attribute('min');
   let sliderMax = stepSlider.attribute('max');
   let selectedStep = new Date(stepSlider.value()); // stepSlider.attribute('min')
-  let mappedStep = map(sliderValue, sliderMin, sliderMax, 0, totalSteps);
+  let mappedStep = int(map(sliderValue, sliderMin, sliderMax, 0, totalSteps));
+ 
 
 
   for (let j = 0; j < dataObjects.length; j++) {
@@ -170,46 +93,44 @@ function draw() {
     text(`LongAscNode ${dataObjects[j].om[mappedStep]} `, 10, dataFormatInput.y + 9 * 25);
     text(`perifocus ${dataObjects[j].w[mappedStep]} `, 10, dataFormatInput.y + 10 * 25);
     pop();
+        // Extract relevant arrays for the current planet
+        let eccentricity = float(dataObjects[j].ec[mappedStep]);
+        let inclination = float(dataObjects[j].in[mappedStep]);
+        let longAscNode = float(dataObjects[j].om[mappedStep]);
+        let trueAnomaly = float(dataObjects[j].ta[mappedStep]);
     
-    let trueAnomaly = dataObjects[j].ta.map(Number); // True anomaly. The actual angle between the object and the point of closest approach to the Sun.
-    let semiMajorAxis = dataObjects[j].a.map(Number);  //Semi-major axis. The average distance from the Sun, defining the size of the orbit.
-    let eccentricity = dataObjects[j].ec.map(Number); // Eccentricity of the orbit. How much an orbit deviates from being a perfect circle. It's a number between 0 and 1.// determine how stretched or circular the orbit is
-    let inclination = dataObjects[j].in.map(Number); //crucial for showing how tilted the orbit is relative to the plane of the solar system. It affects the orientation of the orbit.
-    let LongAscNode = dataObjects[j].om.map(Number); //determines where the orbit crosses the reference plane (usually the plane of the solar system). It defines the starting point of the orbit in a 2D view.
-    let perifocus  = dataObjects[j].w.map(Number); //indicates where the closest approach to the Sun occurs in the orbit. Together with OM, it helps define the orientation of the orbit.
- 
+        translate(width / 2, height / 2);
+    
+        // Calculate the position of the planet in its orbit
+        let radius = map(eccentricity, 0, 1, 30, 200);
+        let x = radius * cos(trueAnomaly);
+        let y = radius * sin(trueAnomaly);
+    
+        // Rotate the position based on inclination and longitude of the ascending node
+        let inclinationRad = radians(inclination);
+        let longAscNodeRad = radians(longAscNode);
+        let xRotated = x * cos(longAscNodeRad) - y * sin(longAscNodeRad);
+        let yRotated = x * sin(longAscNodeRad) + y * cos(longAscNodeRad);
+    
+        // Draw the planet
+        fill(0);
+        ellipse(xRotated, yRotated, 8, 8);
+        
+        // Draw the orbit (ellipse)
+        noFill();
+        stroke(100);
+        ellipse(0, 0, radius * 2, radius * 2);
 
-    let time = trueAnomaly;
-    translate(width / 2, height / 2);
-
-    // Draw circle
-    noFill();
-    stroke(0);
-    ellipse(0, 0, 300, 300);
-
-    // Plot data points on the circle
-    for (let i = 0; i < time.length; i++) {
-      let angle = map(time[i], min(time), max(time), 0, 360);
-      let radius = map(eccentricity[i], min(eccentricity), max(eccentricity), 50, 150);
-
-      let x = radius * cos(angle);
-      let y = radius * sin(angle);
-
-      // Draw data points
-      fill(0);
-      ellipse(x, y, 8, 8);
-    }
- 
- 
   }
 
-}
+      //the sun
+      push();
+      fill('yellow');
+      strokeWeight(1);
+      stroke(0);
+      ellipse(0, 0, 8, 8);
+      pop();
 
-function updateDate() {
-  let dayOfYear = stepSlider.value();
-  time.current = new Date(time.current.getFullYear(), 0, 1);
-  time.current.setDate(dayOfYear);
-  dateToTransDate();
 }
 
 //   function setup() {
