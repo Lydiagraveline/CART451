@@ -45,26 +45,24 @@ function setup() {
   startDateInput = createInputWithLabel('Start Date:', 10, 60, '2006-01-01');
   endDateInput = createInputWithLabel('End Date:', 10, 85, '2006-01-20');
   stepSizeInput = createInputWithLabel('Step Size:', 10, 110, '1%20d');
-  quantitiesInput = createInputWithLabel('Quantities:', 10, 135, '1,3,4,9,20,23,24,29');
-  dataFormatInput = createInputWithLabel('Data Format:', 10, 160, 'json');
+  // quantitiesInput = createInputWithLabel('Quantities:', 10, 135, '1,3,4,9,20,23,24,29');
+  // dataFormatInput = createInputWithLabel('Data Format:', 10, 160, 'json');
 
   // Create and position fetch data button
   let fetchDataButton = createButton('Fetch Data');
   fetchDataButton.mousePressed(fetchData);
-  fetchDataButton.position(10, dataFormatInput.y + 25);
+  fetchDataButton.position(10, stepSizeInput.y + 25);
 
   // Fetch data from JPL Horizons API
   fetchData();
 
-  // Draw the canvas
-  // draw();
 
   stepSlider = createSlider(0, 100, 0); // Set initial range, you can adjust this
   stepSlider.position(10, fetchDataButton.y + 25);
   stepSlider.input(updateSelectedDate); // Call updateSelectedDate when the slider is moved
     // Inside the setup() function
-selectedDate = createP('Selected Date: ');
-selectedDate.position(10, dataFormatInput.y + 3 * 25);
+  selectedDate = createP('Selected Date: ');
+  selectedDate.position(10, stepSizeInput.y + 3 * 25);
 }
 
 
@@ -72,7 +70,7 @@ selectedDate.position(10, dataFormatInput.y + 3 * 25);
 function draw() {
   fill(250);
   noStroke();
-  rect(0, dataFormatInput.y + 3 * 25, width, height);
+  rect(0, stepSizeInput.y + 3 * 25, width, height);
  // push();
   textSize(16);
   fill(0);
@@ -85,13 +83,13 @@ function draw() {
  
 
   for (let j = 0; j < dataObjects.length; j++) {
-    text(`True Anomaly ${dataObjects[j].ta[mappedStep]} `, 10, dataFormatInput.y + 5 * 25);
-    text(`semiMajorAxis ${dataObjects[j].a[mappedStep]} `, 10, dataFormatInput.y + 6 * 25);
-    text(`eccentricity ${dataObjects[j].ec[mappedStep]} `, 10, dataFormatInput.y + 7 * 25);
-    text(`inclination ${dataObjects[j].in[mappedStep]} `, 10, dataFormatInput.y + 8 * 25);
-    text(`LongAscNode ${dataObjects[j].om[mappedStep]} `, 10, dataFormatInput.y + 9 * 25);
-    text(`perifocus ${dataObjects[j].w[mappedStep]} `, 10, dataFormatInput.y + 10 * 25);
-    text(`Mean Anomaly ${dataObjects[j].ma[mappedStep]} `, 10, dataFormatInput.y + 11 * 25); 
+    // text(`True Anomaly ${dataObjects[j].ta[mappedStep]} `, 10, stepSizeInput.y + 5 * 25);
+    // text(`semiMajorAxis ${dataObjects[j].a[mappedStep]} `, 10, stepSizeInput.y + 6 * 25);
+    // text(`eccentricity ${dataObjects[j].ec[mappedStep]} `, 10, stepSizeInput.y + 7 * 25);
+    // text(`inclination ${dataObjects[j].in[mappedStep]} `, 10, stepSizeInput.y + 8 * 25);
+    // text(`LongAscNode ${dataObjects[j].om[mappedStep]} `, 10, stepSizeInput.y + 9 * 25);
+    // text(`perifocus ${dataObjects[j].w[mappedStep]} `, 10, stepSizeInput.y + 10 * 25);
+    // text(`Mean Anomaly ${dataObjects[j].ma[mappedStep]} `, 10, stepSizeInput.y + 11 * 25); 
   }
 
 
@@ -112,7 +110,7 @@ function draw() {
         let time = timeInDays;//mappedStep
 
         let eccentricAnom = EccAnom(eccentricity, meanAnomaly);
-        console.log(eccentricAnom);
+  
        
 
          // Calculate true anomaly
@@ -122,41 +120,6 @@ function draw() {
 let trueAnom = 2 * (atan(trueAnomalyArg) / K);  // Use atan function here
 // Ensure trueAnom is within the range [0, 360)
 trueAnom = (trueAnom + 360) % 360;
-   // console.log(trueAnom);
-
-
-//    let scalingFactor = 0.000001;
-// let orbitScalingFactor = 0.000001;
-// let radius = scalingFactor * semiMajorAxis * (1 - eccentricity * cos(radians(eccentricAnom)));
-
-//    // Calculate the position of the planet in its orbit
-//    let x = radius * cos(radians(trueAnomaly));
-//    let y = radius * sin(radians(trueAnomaly));
-   
-//    // Rotate the position based on inclination and longitude of the ascending node
-//    let inclinationRad = radians(inclination);
-//    let longAscNodeRad = radians(longAscNode);
-//    let xRotated = x * cos(longAscNodeRad) - y * sin(longAscNodeRad);
-//    let yRotated = x * sin(longAscNodeRad) + y * cos(longAscNodeRad);
-
-//    console.log('radius:', radius);
-// console.log('trueAnomaly:', trueAnomaly);
-   
-//    // Draw the planet
-//    fill(0);
-//    ellipse(xRotated, yRotated, 8, 8);
-   
-//    // Draw the orbit (ellipse)
-//    noFill();
-//    stroke(100);
-//    ellipse(0, 0, orbitScalingFactor * semiMajorAxis * 2, orbitScalingFactor * semiMajorAxis * (1 - eccentricity * 2));
-    
-       
-    
-        // Calculate the position of the planet in its orbit
-       // radius = scalingFactor * semiMajorAxis * (1 - eccentricity * cos(radians(eccentricAnom)));
-
-
 
 
 let scalingFactor = 0.0000001;  // Adjust the scaling factor as needed
@@ -167,7 +130,7 @@ let semiMajorAxisScaled = semiMajorAxis * scalingFactor;
                                  //a    
         let radius = scalingFactor * (semiMajorAxis * (1 - eccentricity * eccentricity) / ( 1 + eccentricity * Math.cos(toRadians(trueAnom)))); //* (1 - eccentricity * cos(radians(eccentricAnom)));
         //radius = distance from the planet to the focus of the ellipse  	//https://en.wikipedia.org/wiki/True_anomaly#Radius_from_true_anomaly
-      //console.log(calculatedRadius);
+
         let x = radius * cos(trueAnomaly);
         let y = radius * sin(trueAnomaly);
     
@@ -294,14 +257,13 @@ function fetchData() {
   let startDate = startDateInput.value();
   let endDate = endDateInput.value();
   let stepSize = stepSizeInput.value();
-  let quantities = quantitiesInput.value();
-  let dataFormat = dataFormatInput.value();
+  let dataFormat = "json"//dataFormatInput.value();
   let output = "ELEMENTS";
 
 
 
   // Set the dynamic parameters in the apiUrl
-  apiUrl = `api?format=${dataFormat}&COMMAND='${command}'&OBJ_DATA='YES'&MAKE_EPHEM='YES'&EPHEM_TYPE='${output}'&CENTER='${observerLocation}'&START_TIME='${startDate}'&STOP_TIME='${endDate}'&STEP_SIZE='${stepSize}'&QUANTITIES='${quantities}'`;
+  apiUrl = `api?format=${dataFormat}&COMMAND='${command}'&OBJ_DATA='YES'&MAKE_EPHEM='YES'&EPHEM_TYPE='${output}'&CENTER='${observerLocation}'&START_TIME='${startDate}'&STOP_TIME='${endDate}'&STEP_SIZE='${stepSize}'`;
   // Calculate total steps and update selected date
 
 
