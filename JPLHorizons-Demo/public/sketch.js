@@ -73,7 +73,7 @@ function draw() {
   fill(250);
   noStroke();
   rect(0, dataFormatInput.y + 3 * 25, width, height);
-  push();
+ // push();
   textSize(16);
   fill(0);
   textSize(12);
@@ -84,7 +84,6 @@ function draw() {
   let mappedStep = int(map(sliderValue, sliderMin, sliderMax, 0, totalSteps));
  
 
-
   for (let j = 0; j < dataObjects.length; j++) {
     text(`True Anomaly ${dataObjects[j].ta[mappedStep]} `, 10, dataFormatInput.y + 5 * 25);
     text(`semiMajorAxis ${dataObjects[j].a[mappedStep]} `, 10, dataFormatInput.y + 6 * 25);
@@ -92,34 +91,111 @@ function draw() {
     text(`inclination ${dataObjects[j].in[mappedStep]} `, 10, dataFormatInput.y + 8 * 25);
     text(`LongAscNode ${dataObjects[j].om[mappedStep]} `, 10, dataFormatInput.y + 9 * 25);
     text(`perifocus ${dataObjects[j].w[mappedStep]} `, 10, dataFormatInput.y + 10 * 25);
-    pop();
+    text(`Mean Anomaly ${dataObjects[j].ma[mappedStep]} `, 10, dataFormatInput.y + 11 * 25); 
+  }
+
+
+  translate(width / 2, height / 2);
+  for (let j = 0; j < dataObjects.length; j++) {
+  
+   // pop();
         // Extract relevant arrays for the current planet
         let eccentricity = float(dataObjects[j].ec[mappedStep]);
         let inclination = float(dataObjects[j].in[mappedStep]);
         let longAscNode = float(dataObjects[j].om[mappedStep]);
-        let trueAnomaly = float(dataObjects[j].ta[mappedStep]);
+        let meanAnomaly = float(dataObjects[j].ma[mappedStep]); //the angle representing the object's position in its orbit
+        let trueAnomaly = float(dataObjects[j].ta[0]);
+        let semiMajorAxis = float(dataObjects[j].a[0]);
+        let perifocus = float(dataObjects[j].w[0]);
+
+        let timeInDays = stepSlider.value() / (1000 * 60 * 60 * 24); // Convert milliseconds to days
+        let time = timeInDays;//mappedStep
+
+        let eccentricAnom = EccAnom(eccentricity, meanAnomaly);
+        console.log(eccentricAnom);
+       
+
+         // Calculate true anomaly
+    let trueAnomalyArg = Math.atan2(Math.sqrt(1 - eccentricity) * Math.sin(radians(eccentricAnom) / 2), Math.sqrt(1 + eccentricity) * Math.cos(radians(eccentricAnom) / 2));
+    let K = Math.PI / 180.0; // Radian converter variable
+// Use degrees function to convert trueAnomalyArg to degrees
+let trueAnom = 2 * (atan(trueAnomalyArg) / K);  // Use atan function here
+// Ensure trueAnom is within the range [0, 360)
+trueAnom = (trueAnom + 360) % 360;
+   // console.log(trueAnom);
+
+
+//    let scalingFactor = 0.000001;
+// let orbitScalingFactor = 0.000001;
+// let radius = scalingFactor * semiMajorAxis * (1 - eccentricity * cos(radians(eccentricAnom)));
+
+//    // Calculate the position of the planet in its orbit
+//    let x = radius * cos(radians(trueAnomaly));
+//    let y = radius * sin(radians(trueAnomaly));
+   
+//    // Rotate the position based on inclination and longitude of the ascending node
+//    let inclinationRad = radians(inclination);
+//    let longAscNodeRad = radians(longAscNode);
+//    let xRotated = x * cos(longAscNodeRad) - y * sin(longAscNodeRad);
+//    let yRotated = x * sin(longAscNodeRad) + y * cos(longAscNodeRad);
+
+//    console.log('radius:', radius);
+// console.log('trueAnomaly:', trueAnomaly);
+   
+//    // Draw the planet
+//    fill(0);
+//    ellipse(xRotated, yRotated, 8, 8);
+   
+//    // Draw the orbit (ellipse)
+//    noFill();
+//    stroke(100);
+//    ellipse(0, 0, orbitScalingFactor * semiMajorAxis * 2, orbitScalingFactor * semiMajorAxis * (1 - eccentricity * 2));
     
-        translate(width / 2, height / 2);
+       
     
         // Calculate the position of the planet in its orbit
-        let radius = map(eccentricity, 0, 1, 30, 200);
+       // radius = scalingFactor * semiMajorAxis * (1 - eccentricity * cos(radians(eccentricAnom)));
+
+
+
+
+let scalingFactor = 0.0000001;  // Adjust the scaling factor as needed
+let semiMajorAxisScaled = semiMajorAxis * scalingFactor;
+//let calculatedRadiusScaled = calculatedRadius * scalingFactor;
+
+        //let radius = map(eccentricity, 0, 1, 30, 200);
+                                 //a    
+        let radius = scalingFactor * (semiMajorAxis * (1 - eccentricity * eccentricity) / ( 1 + eccentricity * Math.cos(toRadians(trueAnom)))); //* (1 - eccentricity * cos(radians(eccentricAnom)));
+        //radius = distance from the planet to the focus of the ellipse  	//https://en.wikipedia.org/wiki/True_anomaly#Radius_from_true_anomaly
+      //console.log(calculatedRadius);
         let x = radius * cos(trueAnomaly);
         let y = radius * sin(trueAnomaly);
     
         // Rotate the position based on inclination and longitude of the ascending node
         let inclinationRad = radians(inclination);
         let longAscNodeRad = radians(longAscNode);
-        let xRotated = x * cos(longAscNodeRad) - y * sin(longAscNodeRad);
-        let yRotated = x * sin(longAscNodeRad) + y * cos(longAscNodeRad);
-    
+        let xRotated = radius * (Math.cos(toRadians(longAscNode)) * Math.cos(toRadians(trueAnom + perifocus - longAscNode)) - Math.sin(toRadians(longAscNode)) * Math.sin(toRadians(trueAnom + perifocus - longAscNode)) * Math.cos(toRadians(inclination)))//x * cos(longAscNodeRad) - y * sin(longAscNodeRad);
+        let yRotated = radius * (Math.sin(toRadians(longAscNode)) * Math.cos(toRadians(trueAnom + perifocus - longAscNode)) + Math.cos(toRadians(longAscNode)) * Math.sin(toRadians(trueAnom + perifocus - longAscNode)))//x * sin(longAscNodeRad) + y * cos(longAscNodeRad);
+
+        //oNow = longAscNode
+        //wNow = Longitude of the Perihelion perifocus
+        //iNow = Orbit orientation (Orbital Inclination) inclination
+
+        //determine Heliocentric Ecliptic Coordinates	
+        //xGen = radius * (Math.cos(toRadians(oNow)) * Math.cos(toRadians(trueAnom + wNow - oNow)) - Math.sin(toRadians(oNow)) * Math.sin(toRadians(trueAnom + wNow - oNow)) * Math.cos(toRadians(iNow)));
+        //yGen = radius * (Math.sin(toRadians(oNow)) * Math.cos(toRadians(trueAnom + wNow - oNow)) + Math.cos(toRadians(oNow)) * Math.sin(toRadians(trueAnom + wNow - oNow)) * Math.cos(toRadians(iNo
+
+        pos = createVector( xRotated, yRotated);
+
+
         // Draw the planet
         fill(0);
-        ellipse(xRotated, yRotated, 8, 8);
-        
+        ellipse(pos.x , pos.y, 8); //draw planet
+
         // Draw the orbit (ellipse)
         noFill();
         stroke(100);
-        ellipse(0, 0, radius * 2, radius * 2);
+        // ellipse(0, 0, radius * 2, radius * 2);
 
   }
 
@@ -133,41 +209,29 @@ function draw() {
 
 }
 
-//   function setup() {
-//     createCanvas(400, 400);
-//     angleMode(DEGREES);
-//    //parseEphemerisData(inputText);
-//    //console.log(orbitalData);
-//     //time = orbitalData.time;
-//     //eccentricity = orbitalData.eccentricity;
-//   // const { time, eccentricity } = parseEphemerisData(inputText);
+function toRadians(deg){
+	return deg * (Math.PI / 180);
+}
 
-// // console.log('Time:', time);
-// // console.log('Eccentricity:', eccentricity);
-//   }
+// Kepler's Equation approximation for Eccentric Anomaly ////https://en.wikipedia.org/wiki/Kepler%27s_equation#Numerical_approximation_of_inverse_pro
+function EccAnom(ec, m) {
+	let i = 0;
+	let delta = Math.pow(10,- 6);
+	let E;
 
-//   function draw() {
-//     background(255);
-//     translate(width / 2, height / 2);
+	m = m / 360.0;
+	m = 2.0 * Math.PI * (m - Math.floor(m));
+	E = m;
 
-//     // Draw circle
-//     noFill();
-//     stroke(0);
-//     ellipse(0, 0, 300, 300);
+	while ((Math.abs((E - ec * Math.sin(E) - m)) > delta) && (i < 30)) {
+		E = E - ((E - ec * Math.sin(E) - m) / (1.0 - ec * Math.cos(E)));
+		i ++;   //f(E) = E - ec * sin(E) - m  // f'(E) = 1 - ec * cos(E) 
+	}
 
-//     // Plot data points on the circle
-//     for (let i = 0; i < time.length; i++) {
-//       let angle = map(time[i], min(time), max(time), 0, 360);
-//       let radius = map(eccentricity[i], min(eccentricity), max(eccentricity), 50, 150);
+	E = E / ( Math.PI / 180.0);
 
-//       let x = radius * cos(angle);
-//       let y = radius * sin(angle);
-
-//       // Draw data points
-//       fill(0);
-//       ellipse(x, y, 8, 8);
-//     }
-//   }
+	return Math.round(E * Math.pow(10, 6)) / Math.pow(10, 6);
+}
 
 // Function to update slider range
 function updateSliderRange(startDate, endDate) {
@@ -222,7 +286,7 @@ function createInputWithLabel(label, x, y, defaultValue) {
 
 // Fetch data function
 function fetchData() {
-  dataObjects = []; // clear the array
+  //dataObjects = []; // clear the array
 
   // Get values from input elements
   let command = commandSelect.value();
@@ -388,6 +452,7 @@ function parseEphemerisData(data) {
   let OM = []; //Longitude of the Ascending Node
   let W = []; //Argument of Perifocus 
   let A = []; //Semi-Major Axis
+  let MA = []; //Mean Anamoly
   
 
   for (let i = 0; i < groupedObjects.length; i++) {
@@ -396,6 +461,7 @@ function parseEphemerisData(data) {
     OM.push(extractValues(groupedObjects[i].line3, 'OM'));
     W.push(extractValues(groupedObjects[i].line3, 'W'));
     TA.push(extractValues(groupedObjects[i].line4, 'TA'));
+    MA.push(extractValues(groupedObjects[i].line4, 'MA'));
     A.push(extractValues(groupedObjects[i].line5, 'A'));
     //IN.push(extractValues(groupedObjects[i].line5, 'IN'));
   }
@@ -407,7 +473,8 @@ function parseEphemerisData(data) {
     a: A,
     in: IN,
     om: OM,
-    w: W
+    w: W,
+    ma: MA
   }
   console.log(newDataObject);
   dataObjects.push(newDataObject);
