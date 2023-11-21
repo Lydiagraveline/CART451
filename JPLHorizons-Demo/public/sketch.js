@@ -37,6 +37,53 @@ const planetOptions = [
   // Add more planets as needed
 ];
 
+// Fetch data function
+function fetchData() {
+  //dataObjects = []; // clear the array
+
+  // Get values from input elements
+  let command = commandSelect.value();
+  let observerLocation = observerLocationInput.value();
+  let startDate = startDateInput.value();
+  let endDate = endDateInput.value();
+  let stepSize = stepSizeInput.value();
+  let dataFormat = "json"//dataFormatInput.value();
+  let output = "ELEMENTS";
+
+  // Set the dynamic parameters in the apiUrl
+  apiUrl = `api?format=${dataFormat}&COMMAND='${command}'&OBJ_DATA='YES'&MAKE_EPHEM='YES'&EPHEM_TYPE='${output}'&CENTER='${observerLocation}'&START_TIME='${startDate}'&STOP_TIME='${endDate}'&STEP_SIZE='${stepSize}'`;
+  // Calculate total steps and update selected date
+
+  // Use the fetch API to make the request
+  fetch(apiUrl)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(data => {
+      dataString = data;
+      ephemerisBlock = extractEphemerisBlock(data);
+
+      if (dataFormat === "json") {
+        ephemData = parseEphemerisData(ephemerisBlock);
+      } else {
+        console.log("data format = " + dataFormat);
+      }
+      // Update slider range based on start and end dates
+      updateSliderRange(startDateInput.value(), endDateInput.value());
+      // Calculate total steps and update selected date
+      totalSteps = calculateTotalSteps(startDateInput.value(), endDateInput.value(), stepSizeInput.value());
+      updateSelectedDate();
+
+      draw(); // Redraw canvas after fetching data
+
+    })
+    .catch(error => console.error('Error fetching data:', error));
+}
+
+
 // Setup function
 function setup() {
   canvasWidth = windowWidth;
@@ -196,53 +243,6 @@ if (distanceToMouse < 8) { // Assuming the radius of the ellipse is 8
 
 }
 
-// Fetch data function
-function fetchData() {
-  //dataObjects = []; // clear the array
-
-  // Get values from input elements
-  let command = commandSelect.value();
-  let observerLocation = observerLocationInput.value();
-  let startDate = startDateInput.value();
-  let endDate = endDateInput.value();
-  let stepSize = stepSizeInput.value();
-  let dataFormat = "json"//dataFormatInput.value();
-  let output = "ELEMENTS";
-
-  // Set the dynamic parameters in the apiUrl
-  apiUrl = `api?format=${dataFormat}&COMMAND='${command}'&OBJ_DATA='YES'&MAKE_EPHEM='YES'&EPHEM_TYPE='${output}'&CENTER='${observerLocation}'&START_TIME='${startDate}'&STOP_TIME='${endDate}'&STEP_SIZE='${stepSize}'`;
-  // Calculate total steps and update selected date
-
-  // Use the fetch API to make the request
-  fetch(apiUrl)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      return response.text();
-    })
-    .then(data => {
-      dataString = data;
-      ephemerisBlock = extractEphemerisBlock(data);
-
-      if (dataFormat === "json") {
-        ephemData = parseEphemerisData(ephemerisBlock);
-      } else {
-        console.log("data format = " + dataFormat);
-      }
-      // Update slider range based on start and end dates
-      updateSliderRange(startDateInput.value(), endDateInput.value());
-      // Calculate total steps and update selected date
-      totalSteps = calculateTotalSteps(startDateInput.value(), endDateInput.value(), stepSizeInput.value());
-      updateSelectedDate();
-
-      draw(); // Redraw canvas after fetching data
-
-
-
-    })
-    .catch(error => console.error('Error fetching data:', error));
-}
 
 function toRadians(deg){
 	return deg * (Math.PI / 180);
