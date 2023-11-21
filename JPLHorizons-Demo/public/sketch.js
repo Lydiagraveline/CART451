@@ -1,7 +1,7 @@
 
 
 //***************************************//
-//*************Input sketch*************//
+//*************Orbite sketch*************//
 //**************************************//
 
 
@@ -56,11 +56,14 @@ function setup() {
   // Fetch data from JPL Horizons API
   fetchData();
 
+  //display a link to the unformated data 
+  let a = createA(`https://ssd.jpl.nasa.gov/api/horizons.${apiUrl}`, 'the data', '_blank');
+  a.position(width/2, 0);
 
   stepSlider = createSlider(0, 100, 0); // Set initial range, you can adjust this
   stepSlider.position(10, fetchDataButton.y + 25);
   stepSlider.input(updateSelectedDate); // Call updateSelectedDate when the slider is moved
-    // Inside the setup() function
+
   selectedDate = createP('Selected Date: ');
   selectedDate.position(10, stepSizeInput.y + 3 * 25);
 }
@@ -75,13 +78,17 @@ function draw() {
   textSize(16);
   fill(0);
   textSize(12);
+
+
+  //slider
   let sliderValue = stepSlider.value();
   let sliderMin = stepSlider.attribute('min');
   let sliderMax = stepSlider.attribute('max');
-  let selectedStep = new Date(stepSlider.value()); // stepSlider.attribute('min')
+  let selectedStep = new Date(stepSlider.value()); 
   let mappedStep = int(map(sliderValue, sliderMin, sliderMax, 0, totalSteps));
  
 
+  //display the planet's data
   for (let j = 0; j < dataObjects.length; j++) {
     // text(`True Anomaly ${dataObjects[j].ta[mappedStep]} `, 10, stepSizeInput.y + 5 * 25);
     // text(`semiMajorAxis ${dataObjects[j].a[mappedStep]} `, 10, stepSizeInput.y + 6 * 25);
@@ -116,7 +123,7 @@ function draw() {
          // Calculate true anomaly
     let trueAnomalyArg = Math.atan2(Math.sqrt(1 - eccentricity) * Math.sin(radians(eccentricAnom) / 2), Math.sqrt(1 + eccentricity) * Math.cos(radians(eccentricAnom) / 2));
     let K = Math.PI / 180.0; // Radian converter variable
-// Use degrees function to convert trueAnomalyArg to degrees
+    // Use degrees function to convert trueAnomalyArg to degrees
 let trueAnom = 2 * (atan(trueAnomalyArg) / K);  // Use atan function here
 // Ensure trueAnom is within the range [0, 360)
 trueAnom = (trueAnom + 360) % 360;
@@ -140,26 +147,16 @@ let semiMajorAxisScaled = semiMajorAxis * scalingFactor;
         let xRotated = radius * (Math.cos(toRadians(longAscNode)) * Math.cos(toRadians(trueAnom + perifocus - longAscNode)) - Math.sin(toRadians(longAscNode)) * Math.sin(toRadians(trueAnom + perifocus - longAscNode)) * Math.cos(toRadians(inclination)))//x * cos(longAscNodeRad) - y * sin(longAscNodeRad);
         let yRotated = radius * (Math.sin(toRadians(longAscNode)) * Math.cos(toRadians(trueAnom + perifocus - longAscNode)) + Math.cos(toRadians(longAscNode)) * Math.sin(toRadians(trueAnom + perifocus - longAscNode)))//x * sin(longAscNodeRad) + y * cos(longAscNodeRad);
 
-        //oNow = longAscNode
-        //wNow = Longitude of the Perihelion perifocus
-        //iNow = Orbit orientation (Orbital Inclination) inclination
-
-        //determine Heliocentric Ecliptic Coordinates	
-        //xGen = radius * (Math.cos(toRadians(oNow)) * Math.cos(toRadians(trueAnom + wNow - oNow)) - Math.sin(toRadians(oNow)) * Math.sin(toRadians(trueAnom + wNow - oNow)) * Math.cos(toRadians(iNow)));
-        //yGen = radius * (Math.sin(toRadians(oNow)) * Math.cos(toRadians(trueAnom + wNow - oNow)) + Math.cos(toRadians(oNow)) * Math.sin(toRadians(trueAnom + wNow - oNow)) * Math.cos(toRadians(iNo
-
         pos = createVector( xRotated, yRotated);
-
 
         // Draw the planet
         fill(0);
         ellipse(pos.x , pos.y, 8); //draw planet
 
-        // Draw the orbit (ellipse)
-        noFill();
-        stroke(100);
-        // ellipse(0, 0, radius * 2, radius * 2);
-
+        // // Draw the orbit (ellipse)
+        // noFill();
+        // stroke(100);
+        // // ellipse(0, 0, radius * 2, radius * 2);
   }
 
       //the sun
@@ -198,34 +195,26 @@ function EccAnom(ec, m) {
 
 // Function to update slider range
 function updateSliderRange(startDate, endDate) {
-  // Your logic to update the slider range goes here
   // Set the minimum and maximum values of the slider based on the start and end dates
-   const startTimestamp = new Date(startDate).getTime();
-  //  console.log(startTimestamp);
-   const endTimestamp = new Date(endDate).getTime();
-  //  console.log(endDate);
-    //console.log(endTimestamp);
-   const stepMilliseconds = parseStepSize(stepSizeInput.value());
-    const totalSteps = Math.floor((endTimestamp - startTimestamp) / stepMilliseconds);
+  const startTimestamp = new Date(startDate).getTime();
+  const endTimestamp = new Date(endDate).getTime();
+  const stepMilliseconds = parseStepSize(stepSizeInput.value());
+  const totalSteps = Math.floor((endTimestamp - startTimestamp) / stepMilliseconds);
 
   // Update the slider range
   stepSlider.attribute('min',startTimestamp);
    stepSlider.attribute('max',endTimestamp);
    stepSlider.attribute('step', stepMilliseconds);
-  // stepSlider.value(startTimestamp); // Set the initial value to the start date
+
 }
 
 function updateSelectedDate() {
   let currentDate = new Date(startDateInput.value());
-  // console.log(currentDate);
   let selectedStep = stepSlider.value();
-  //console.log(stepSlider.value());
   let selectedTimestamp = currentDate.getTime() + selectedStep * parseFloat(stepSizeInput.value()) * 24 * 60 * 60 * 1000;
   let selectedDateObj = new Date(selectedStep);
   selectedDate.html('Selected Date: ' + selectedDateObj.toDateString());
 }
-
-
 
 
 // Create select input with label
@@ -260,13 +249,9 @@ function fetchData() {
   let dataFormat = "json"//dataFormatInput.value();
   let output = "ELEMENTS";
 
-
-
   // Set the dynamic parameters in the apiUrl
   apiUrl = `api?format=${dataFormat}&COMMAND='${command}'&OBJ_DATA='YES'&MAKE_EPHEM='YES'&EPHEM_TYPE='${output}'&CENTER='${observerLocation}'&START_TIME='${startDate}'&STOP_TIME='${endDate}'&STEP_SIZE='${stepSize}'`;
   // Calculate total steps and update selected date
-
-
 
   // Use the fetch API to make the request
   fetch(apiUrl)
@@ -287,12 +272,8 @@ function fetchData() {
       }
 
       draw(); // Redraw canvas after fetching data
-         // Calculate the number of steps between Start Date and End Date
-         //totalSteps = calculateTotalSteps(startDate, endDate, stepSize);
-        // updateSelectedDate(); 
-      //updateSelectedDate(); //updates the slider
         // Update slider range based on start and end dates
-  updateSliderRange(startDateInput.value(), endDateInput.value());
+    updateSliderRange(startDateInput.value(), endDateInput.value());
 
   // Calculate total steps and update selected date
   totalSteps = calculateTotalSteps(startDateInput.value(), endDateInput.value(), stepSizeInput.value());
@@ -313,11 +294,9 @@ function calculateTotalSteps(startDate, endDate, stepSize) {
 
 // Function to parse step size
 function parseStepSize(stepSize) {
-  // Your logic to parse the step size and return it in milliseconds
-  // For example, if step size is in days, you can convert it to milliseconds
   // Return the step size in milliseconds
   const daysInMilliseconds = 24 * 60 * 60 * 1000; // One day in milliseconds
-  return parseInt(stepSize) * daysInMilliseconds; // Assuming step size is in days
+  return parseInt(stepSize) * daysInMilliseconds; 
 }
 
 // Extract ephemeris block function
@@ -331,7 +310,6 @@ function extractEphemerisBlock(text) {
     return null;
   }
 }
-
 
 // Function to create input label
 function createInputLabel(label, x, y) {
@@ -444,24 +422,23 @@ function parseEphemerisData(data) {
 }
 
 // Function to display data
-function displayData() {
-  textSize(16);
-  let a = createA(`https://ssd.jpl.nasa.gov/api/horizons.${apiUrl}`, 'link to the data', '_blank');
-  a.position(width/2, 0);
+// function displayData() {
+//   textSize(16);
 
-  textSize(16);
-  fill(0);
-  text("Fetched Data:", 10, dataFormatInput.y + 3 * 25);
-  textSize(12);
-  text(`data Objects: ${dataObjects.length}`, 10, dataFormatInput.y + 4 * 25);
 
-  let yPos = 275; // Initial yPos value
+//   textSize(16);
+//   fill(0);
+//   text("Fetched Data:", 10, dataFormatInput.y + 3 * 25);
+//   textSize(12);
+//   text(`data Objects: ${dataObjects.length}`, 10, dataFormatInput.y + 4 * 25);
 
-  for (let j = 0; j < dataObjects.length; j++) {
-    text("Planet: " + dataObjects[j].planet, 100, yPos, windowWidth);
-    text("EC: " + dataObjects[j].ec, 100, yPos + 20, windowWidth);
-    text("TA: " + dataObjects[j].ta, 100, yPos + 50, windowWidth);
+//   let yPos = 275; // Initial yPos value
 
-    yPos += 110;
-  }
-}
+//   for (let j = 0; j < dataObjects.length; j++) {
+//     text("Planet: " + dataObjects[j].planet, 100, yPos, windowWidth);
+//     text("EC: " + dataObjects[j].ec, 100, yPos + 20, windowWidth);
+//     text("TA: " + dataObjects[j].ta, 100, yPos + 50, windowWidth);
+
+//     yPos += 110;
+//   }
+// }
