@@ -15,14 +15,19 @@ let commandSelect, observerLocationInput, startDateInput, endDateInput, stepSize
 let apiUrl;
 let ephemerisBlock;
 let ephemData;
-let stepSlider; // New variable for the slider
+let dateSlider; // New variable for the slider
 let selectedDate;
 let totalSteps;
+let scalingFactor = 0.0000001;
+let zoomFactor = 1.0; // Initial zoom factor
+let zoomSlider;
+
 
 // Planet options
 const planetOptions = [
   { value: '199', label: 'Mercury' },
   { value: '299', label: 'Venus' },
+  { value: '399', label: 'Earth' },
   { value: '499', label: 'Mars' },
   { value: '599', label: 'Jupiter' },
   { value: '699', label: 'Saturn' },
@@ -39,6 +44,7 @@ function setup() {
   createCanvas(canvasWidth, canvasHeight);
   angleMode(DEGREES);
 
+
   // Create and position input elements
   commandSelect = createSelectInput('Command:', 10, 10, planetOptions);
   observerLocationInput = createInputWithLabel('Observer Location:', 10, 35, '500@10');
@@ -47,6 +53,10 @@ function setup() {
   stepSizeInput = createInputWithLabel('Step Size:', 10, 110, '1%20d');
   // quantitiesInput = createInputWithLabel('Quantities:', 10, 135, '1,3,4,9,20,23,24,29');
   // dataFormatInput = createInputWithLabel('Data Format:', 10, 160, 'json');
+
+    // Attach an input event listener
+  startDateInput.changed(inputChanged);
+  endDateInput.changed(inputChanged);
 
   // Create and position fetch data button
   let fetchDataButton = createButton('Fetch Data');
@@ -60,82 +70,64 @@ function setup() {
   let a = createA(`https://ssd.jpl.nasa.gov/api/horizons.${apiUrl}`, 'the data', '_blank');
   a.position(width/2, 0);
 
-  stepSlider = createSlider(0, 100, 0); // Set initial range, you can adjust this
-  stepSlider.position(10, fetchDataButton.y + 25);
-  stepSlider.input(updateSelectedDate); // Call updateSelectedDate when the slider is moved
+  dateSlider = createSlider(0, 100, 0); // Set initial range, you can adjust this
+  dateSlider.position(10, fetchDataButton.y + 25);
+  dateSlider.input(updateSelectedDate); // Call updateSelectedDate when the slider is moved
 
   selectedDate = createP('Selected Date: ');
   selectedDate.position(10, stepSizeInput.y + 3 * 25);
+
+  text("zoom",width/4, fetchDataButton.y + 20 )
+  zoomSlider = createSlider(0.1, 10, 1, 0); // Set initial range and step
+  zoomSlider.position(width/4, fetchDataButton.y + 25);
+  zoomSlider.input(updateZoomFactor);
 }
 
 
 // Draw function
 function draw() {
+
+  endDateInput
   fill(250);
   noStroke();
   rect(0, stepSizeInput.y + 3 * 25, width, height);
- // push();
   textSize(16);
   fill(0);
   textSize(12);
 
 
   //slider
-  let sliderValue = stepSlider.value();
-  let sliderMin = stepSlider.attribute('min');
-  let sliderMax = stepSlider.attribute('max');
-  let selectedStep = new Date(stepSlider.value()); 
+  let sliderValue = dateSlider.value();
+  let sliderMin = dateSlider.attribute('min');
+  let sliderMax = dateSlider.attribute('max');
+  let selectedStep = new Date(dateSlider.value()); 
   let mappedStep = int(map(sliderValue, sliderMin, sliderMax, 0, totalSteps));
  
-
-  //display the planet's data
-  for (let j = 0; j < dataObjects.length; j++) {
-    // text(`True Anomaly ${dataObjects[j].ta[mappedStep]} `, 10, stepSizeInput.y + 5 * 25);
-    // text(`semiMajorAxis ${dataObjects[j].a[mappedStep]} `, 10, stepSizeInput.y + 6 * 25);
-    // text(`eccentricity ${dataObjects[j].ec[mappedStep]} `, 10, stepSizeInput.y + 7 * 25);
-    // text(`inclination ${dataObjects[j].in[mappedStep]} `, 10, stepSizeInput.y + 8 * 25);
-    // text(`LongAscNode ${dataObjects[j].om[mappedStep]} `, 10, stepSizeInput.y + 9 * 25);
-    // text(`perifocus ${dataObjects[j].w[mappedStep]} `, 10, stepSizeInput.y + 10 * 25);
-    // text(`Mean Anomaly ${dataObjects[j].ma[mappedStep]} `, 10, stepSizeInput.y + 11 * 25); 
-  }
-
-
   translate(width / 2, height / 2);
+
   for (let j = 0; j < dataObjects.length; j++) {
-  
-   // pop();
         // Extract relevant arrays for the current planet
         let eccentricity = float(dataObjects[j].ec[mappedStep]);
         let inclination = float(dataObjects[j].in[mappedStep]);
         let longAscNode = float(dataObjects[j].om[mappedStep]);
         let meanAnomaly = float(dataObjects[j].ma[mappedStep]); //the angle representing the object's position in its orbit
-        let trueAnomaly = float(dataObjects[j].ta[0]);
-        let semiMajorAxis = float(dataObjects[j].a[0]);
-        let perifocus = float(dataObjects[j].w[0]);
+        let trueAnomaly = float(dataObjects[j].ta[mappedStep]); // Use mappedStep instead of [0]
+        let semiMajorAxis = float(dataObjects[j].a[mappedStep]);
+        let perifocus = float(dataObjects[j].w[mappedStep]);
 
-        let timeInDays = stepSlider.value() / (1000 * 60 * 60 * 24); // Convert milliseconds to days
+        let timeInDays = dateSlider.value() / (1000 * 60 * 60 * 24); // Convert milliseconds to days
         let time = timeInDays;//mappedStep
 
-        let eccentricAnom = EccAnom(eccentricity, meanAnomaly);
-  
-       
-
-         // Calculate true anomaly
-    let trueAnomalyArg = Math.atan2(Math.sqrt(1 - eccentricity) * Math.sin(radians(eccentricAnom) / 2), Math.sqrt(1 + eccentricity) * Math.cos(radians(eccentricAnom) / 2));
-    let K = Math.PI / 180.0; // Radian converter variable
-    // Use degrees function to convert trueAnomalyArg to degrees
-let trueAnom = 2 * (atan(trueAnomalyArg) / K);  // Use atan function here
-// Ensure trueAnom is within the range [0, 360)
-trueAnom = (trueAnom + 360) % 360;
+    // Calculate true anomaly using Kepler's Equation
+    let trueAnom = EccAnom(eccentricity, meanAnomaly);
 
 
-let scalingFactor = 0.0000001;  // Adjust the scaling factor as needed
-let semiMajorAxisScaled = semiMajorAxis * scalingFactor;
+//let semiMajorAxisScaled = semiMajorAxis * scalingFactor;
 //let calculatedRadiusScaled = calculatedRadius * scalingFactor;
 
         //let radius = map(eccentricity, 0, 1, 30, 200);
                                  //a    
-        let radius = scalingFactor * (semiMajorAxis * (1 - eccentricity * eccentricity) / ( 1 + eccentricity * Math.cos(toRadians(trueAnom)))); //* (1 - eccentricity * cos(radians(eccentricAnom)));
+        let radius = zoomFactor * scalingFactor * (semiMajorAxis * (1 - eccentricity * eccentricity) / ( 1 + eccentricity * Math.cos(toRadians(trueAnom)))); //* (1 - eccentricity * cos(radians(eccentricAnom)));
         //radius = distance from the planet to the focus of the ellipse  	//https://en.wikipedia.org/wiki/True_anomaly#Radius_from_true_anomaly
 
         let x = radius * cos(trueAnomaly);
@@ -145,18 +137,53 @@ let semiMajorAxisScaled = semiMajorAxis * scalingFactor;
         let inclinationRad = radians(inclination);
         let longAscNodeRad = radians(longAscNode);
         let xRotated = radius * (Math.cos(toRadians(longAscNode)) * Math.cos(toRadians(trueAnom + perifocus - longAscNode)) - Math.sin(toRadians(longAscNode)) * Math.sin(toRadians(trueAnom + perifocus - longAscNode)) * Math.cos(toRadians(inclination)))//x * cos(longAscNodeRad) - y * sin(longAscNodeRad);
-        let yRotated = radius * (Math.sin(toRadians(longAscNode)) * Math.cos(toRadians(trueAnom + perifocus - longAscNode)) + Math.cos(toRadians(longAscNode)) * Math.sin(toRadians(trueAnom + perifocus - longAscNode)))//x * sin(longAscNodeRad) + y * cos(longAscNodeRad);
+       let yRotated = radius * (Math.sin(toRadians(longAscNode)) * Math.cos(toRadians(trueAnom + perifocus - longAscNode)) + Math.cos(toRadians(longAscNode)) * Math.sin(toRadians(trueAnom + perifocus - longAscNode)))//x * sin(longAscNodeRad) + y * cos(longAscNodeRad);
 
         pos = createVector( xRotated, yRotated);
+
+// Get screen coordinates
+let screenX = pos.x + width / 2;
+let screenY = pos.y + height / 2;
+
+// Check if the mouse is over the current object (ellipse)
+let distanceToMouse = dist(screenX, screenY, mouseX, mouseY);
+
+if (distanceToMouse < 8) { // Assuming the radius of the ellipse is 8
+  console.log("Mouse over planet");
+      // Display the planet's data
+      let xOffset = -(width / 2) + 10; // Initial x-coordinate
+      let yOffset = -180; // Initial y-coordinate, adjusted for each planet
+    
+      // Display the planet's data
+      text(`Planet = ${dataObjects[j].planet} `, xOffset, yOffset);
+      yOffset += 25; // Increase y-coordinate for the next line
+     
+      text(`True Anomaly ${dataObjects[j].ta[mappedStep]} `, xOffset, yOffset);
+      yOffset += 25; 
+    
+      text(`semiMajorAxis ${dataObjects[j].a[mappedStep]} `, xOffset, yOffset);
+      yOffset += 25;
+    
+      text(`eccentricity ${dataObjects[j].ec[mappedStep]} `, xOffset, yOffset);
+      yOffset += 25;
+    
+      text(`inclination ${dataObjects[j].in[mappedStep]} `, xOffset, yOffset);
+      yOffset += 25;
+    
+      text(`LongAscNode ${dataObjects[j].om[mappedStep]} `, xOffset, yOffset);
+      yOffset += 25;
+    
+      text(`perifocus ${dataObjects[j].w[mappedStep]} `, xOffset, yOffset);
+      yOffset += 25;
+    
+      text(`Mean Anomaly ${dataObjects[j].ma[mappedStep]} `, xOffset, yOffset);
+      yOffset += 25;
+    
+}
 
         // Draw the planet
         fill(0);
         ellipse(pos.x , pos.y, 8); //draw planet
-
-        // // Draw the orbit (ellipse)
-        // noFill();
-        // stroke(100);
-        // // ellipse(0, 0, radius * 2, radius * 2);
   }
 
       //the sun
@@ -167,73 +194,6 @@ let semiMajorAxisScaled = semiMajorAxis * scalingFactor;
       ellipse(0, 0, 8, 8);
       pop();
 
-}
-
-function toRadians(deg){
-	return deg * (Math.PI / 180);
-}
-
-// Kepler's Equation approximation for Eccentric Anomaly ////https://en.wikipedia.org/wiki/Kepler%27s_equation#Numerical_approximation_of_inverse_pro
-function EccAnom(ec, m) {
-	let i = 0;
-	let delta = Math.pow(10,- 6);
-	let E;
-
-	m = m / 360.0;
-	m = 2.0 * Math.PI * (m - Math.floor(m));
-	E = m;
-
-	while ((Math.abs((E - ec * Math.sin(E) - m)) > delta) && (i < 30)) {
-		E = E - ((E - ec * Math.sin(E) - m) / (1.0 - ec * Math.cos(E)));
-		i ++;   //f(E) = E - ec * sin(E) - m  // f'(E) = 1 - ec * cos(E) 
-	}
-
-	E = E / ( Math.PI / 180.0);
-
-	return Math.round(E * Math.pow(10, 6)) / Math.pow(10, 6);
-}
-
-// Function to update slider range
-function updateSliderRange(startDate, endDate) {
-  // Set the minimum and maximum values of the slider based on the start and end dates
-  const startTimestamp = new Date(startDate).getTime();
-  const endTimestamp = new Date(endDate).getTime();
-  const stepMilliseconds = parseStepSize(stepSizeInput.value());
-  const totalSteps = Math.floor((endTimestamp - startTimestamp) / stepMilliseconds);
-
-  // Update the slider range
-  stepSlider.attribute('min',startTimestamp);
-   stepSlider.attribute('max',endTimestamp);
-   stepSlider.attribute('step', stepMilliseconds);
-
-}
-
-function updateSelectedDate() {
-  let currentDate = new Date(startDateInput.value());
-  let selectedStep = stepSlider.value();
-  let selectedTimestamp = currentDate.getTime() + selectedStep * parseFloat(stepSizeInput.value()) * 24 * 60 * 60 * 1000;
-  let selectedDateObj = new Date(selectedStep);
-  selectedDate.html('Selected Date: ' + selectedDateObj.toDateString());
-}
-
-
-// Create select input with label
-function createSelectInput(label, x, y, options) {
-  createInputLabel(label, x, y);
-  let selectVar = createSelect();
-  selectVar.position(150, y);
-  for (let option of options) {
-    selectVar.option(option.label, option.value);
-  }
-  return selectVar;
-}
-
-// Create input with label
-function createInputWithLabel(label, x, y, defaultValue) {
-  createInputLabel(label, x, y);
-  let inputVar = createInput(defaultValue);
-  inputVar.position(150, y);
-  return inputVar;
 }
 
 // Fetch data function
@@ -270,17 +230,95 @@ function fetchData() {
       } else {
         console.log("data format = " + dataFormat);
       }
+      // Update slider range based on start and end dates
+      updateSliderRange(startDateInput.value(), endDateInput.value());
+      // Calculate total steps and update selected date
+      totalSteps = calculateTotalSteps(startDateInput.value(), endDateInput.value(), stepSizeInput.value());
+      updateSelectedDate();
 
       draw(); // Redraw canvas after fetching data
-        // Update slider range based on start and end dates
-    updateSliderRange(startDateInput.value(), endDateInput.value());
 
-  // Calculate total steps and update selected date
-  totalSteps = calculateTotalSteps(startDateInput.value(), endDateInput.value(), stepSizeInput.value());
-  updateSelectedDate();
+
+
     })
     .catch(error => console.error('Error fetching data:', error));
 }
+
+function toRadians(deg){
+	return deg * (Math.PI / 180);
+}
+
+// Kepler's Equation approximation for Eccentric Anomaly ////https://en.wikipedia.org/wiki/Kepler%27s_equation#Numerical_approximation_of_inverse_pro
+function EccAnom(ec, m) {
+	let i = 0;
+	let delta = Math.pow(10,- 6);
+	let E;
+
+	m = m / 360.0;
+	m = 2.0 * Math.PI * (m - Math.floor(m));
+	E = m;
+
+	while ((Math.abs((E - ec * Math.sin(E) - m)) > delta) && (i < 30)) {
+		E = E - ((E - ec * Math.sin(E) - m) / (1.0 - ec * Math.cos(E)));
+		i ++;   //f(E) = E - ec * sin(E) - m  // f'(E) = 1 - ec * cos(E) 
+	}
+
+	E = E / ( Math.PI / 180.0);
+
+	return Math.round(E * Math.pow(10, 6)) / Math.pow(10, 6);
+}
+
+//clears the data object array when the selected date is changed
+function inputChanged() {
+  dataObjects = [];
+  //let inputValue = inputElement.value();
+  console.log("cleared planet array");
+}
+
+// Function to update slider range
+function updateSliderRange(startDate, endDate) {
+  // Set the minimum and maximum values of the slider based on the start and end dates
+  const startTimestamp = new Date(startDate).getTime();
+  const endTimestamp = new Date(endDate).getTime();
+  const stepMilliseconds = parseStepSize(stepSizeInput.value());
+  const totalSteps = Math.floor((endTimestamp - startTimestamp) / stepMilliseconds);
+
+  // Update the slider range
+  dateSlider.attribute('min',startTimestamp);
+   dateSlider.attribute('max',endTimestamp);
+   dateSlider.attribute('step', stepMilliseconds);
+
+}
+
+function updateSelectedDate() {
+  let currentDate = new Date(startDateInput.value());
+  let selectedStep = dateSlider.value();
+  let selectedTimestamp = currentDate.getTime() + selectedStep * parseFloat(stepSizeInput.value()) * 24 * 60 * 60 * 1000;
+  let selectedDateObj = new Date(selectedStep);
+  selectedDate.html('Selected Date: ' + selectedDateObj.toDateString());
+}
+
+
+// Create select input with label
+function createSelectInput(label, x, y, options) {
+  createInputLabel(label, x, y);
+  let selectVar = createSelect();
+  selectVar.position(150, y);
+  for (let option of options) {
+    selectVar.option(option.label, option.value);
+  }
+  return selectVar;
+}
+
+// Create input with label
+function createInputWithLabel(label, x, y, defaultValue) {
+  createInputLabel(label, x, y);
+  let inputVar = createInput(defaultValue);
+  inputVar.position(150, y);
+  return inputVar;
+}
+
+
 
 // Function to calculate the total number of steps between two dates
 function calculateTotalSteps(startDate, endDate, stepSize) {
@@ -421,24 +459,6 @@ function parseEphemerisData(data) {
   return newDataObject;
 }
 
-// Function to display data
-// function displayData() {
-//   textSize(16);
-
-
-//   textSize(16);
-//   fill(0);
-//   text("Fetched Data:", 10, dataFormatInput.y + 3 * 25);
-//   textSize(12);
-//   text(`data Objects: ${dataObjects.length}`, 10, dataFormatInput.y + 4 * 25);
-
-//   let yPos = 275; // Initial yPos value
-
-//   for (let j = 0; j < dataObjects.length; j++) {
-//     text("Planet: " + dataObjects[j].planet, 100, yPos, windowWidth);
-//     text("EC: " + dataObjects[j].ec, 100, yPos + 20, windowWidth);
-//     text("TA: " + dataObjects[j].ta, 100, yPos + 50, windowWidth);
-
-//     yPos += 110;
-//   }
-// }
+function updateZoomFactor() {
+  zoomFactor = zoomSlider.value();
+}
