@@ -1,15 +1,14 @@
-
-
 //***************************************//
 //*************Orbite sketch*************//
 //**************************************//
-
+// Lydia Graveline
+// CART451
+// 2d orbit visualization using NASA's JPL Horizons system
+// https://ssd-api.jpl.nasa.gov/doc/horizons.html 
 
 // Global variables
 let dataObjects = [];
 let canvasWidth, canvasHeight;
-let dataString;
-let headerInfo;
 let ephemerisData;
 let commandSelect, observerLocationInput, startDateInput, endDateInput, stepSizeInput, quantitiesInput, dataFormatInput;
 let apiUrl;
@@ -22,7 +21,6 @@ let scalingFactor = 0.0000001;
 let zoomFactor = 1.0; // Initial zoom factor
 let zoomSlider;
 
-
 // Planet options
 const planetOptions = [
   { value: '199', label: 'Mercury' },
@@ -34,25 +32,40 @@ const planetOptions = [
   { value: '799', label: 'Uranus' },
   { value: '899', label: 'Neptune' },
   { value: '999', label: 'Pluto' }
-  // Add more planets as needed
 ];
+
+// Setup function
+function setup() {
+  canvasWidth = windowWidth;
+  canvasHeight = windowHeight; 
+  createCanvas(canvasWidth, canvasHeight);
+  angleMode(DEGREES);
+
+  //create input elements and buttons and sliders
+  createInputElements();
+
+  // Fetch data from JPL Horizons API
+  fetchData();
+
+  //display a link to the unformated data 
+  let a = createA(`https://ssd.jpl.nasa.gov/api/horizons.${apiUrl}`, 'the data', '_blank');
+  a.position(width/2, 0);
+}
 
 // Fetch data function
 function fetchData() {
-  //dataObjects = []; // clear the array
 
   // Get values from input elements
-  let command = commandSelect.value();
-  let observerLocation = observerLocationInput.value();
-  let startDate = startDateInput.value();
+  let command = commandSelect.value(); //  command = the targeted celestial body, or the planet
+  let observerLocation = '500@10'  //500@10 represents earth    //observerLocationInput.value();
+  let startDate = startDateInput.value(); 
   let endDate = endDateInput.value();
-  let stepSize = stepSizeInput.value();
-  let dataFormat = "json"//dataFormatInput.value();
-  let output = "ELEMENTS";
+  let stepSize = stepSizeInput.value(); //specifies table output print times using the form ‘integer {units} {mode}’. //this demo has only really been tested with STEP_SIZE='1%20d', but feel free to experiment //Can use fixed interval like	STEP_SIZE='1d', STEP_SIZE='3%20h' (w/URL-encoded space), and STEP_SIZE='10m' for example. Also calendar stepping like STEP_SIZE='1 year'. Lastly unitless fixed intervals	STEP_SIZE='86400' (1 second output given 1 day between start/stop) 
+  let dataFormat = "json" //can be "text" or "json", but the this visualization was made to handle json format
+  let output = "ELEMENTS"; //the ephemeris type, using "ELEMENTS" to get orbit data
 
   // Set the dynamic parameters in the apiUrl
   apiUrl = `api?format=${dataFormat}&COMMAND='${command}'&OBJ_DATA='YES'&MAKE_EPHEM='YES'&EPHEM_TYPE='${output}'&CENTER='${observerLocation}'&START_TIME='${startDate}'&STOP_TIME='${endDate}'&STEP_SIZE='${stepSize}'`;
-  // Calculate total steps and update selected date
 
   // Use the fetch API to make the request
   fetch(apiUrl)
@@ -81,53 +94,6 @@ function fetchData() {
 
     })
     .catch(error => console.error('Error fetching data:', error));
-}
-
-
-// Setup function
-function setup() {
-  canvasWidth = windowWidth;
-  canvasHeight = windowHeight; 
-  createCanvas(canvasWidth, canvasHeight);
-  angleMode(DEGREES);
-
-
-  // Create and position input elements
-  commandSelect = createSelectInput('Command:', 10, 10, planetOptions);
-  observerLocationInput = createInputWithLabel('Observer Location:', 10, 35, '500@10');
-  startDateInput = createInputWithLabel('Start Date:', 10, 60, '2006-01-01');
-  endDateInput = createInputWithLabel('End Date:', 10, 85, '2006-01-20');
-  stepSizeInput = createInputWithLabel('Step Size:', 10, 110, '1%20d');
-  // quantitiesInput = createInputWithLabel('Quantities:', 10, 135, '1,3,4,9,20,23,24,29');
-  // dataFormatInput = createInputWithLabel('Data Format:', 10, 160, 'json');
-
-    // Attach an input event listener
-  startDateInput.changed(inputChanged);
-  endDateInput.changed(inputChanged);
-
-  // Create and position fetch data button
-  let fetchDataButton = createButton('Fetch Data');
-  fetchDataButton.mousePressed(fetchData);
-  fetchDataButton.position(10, stepSizeInput.y + 25);
-
-  // Fetch data from JPL Horizons API
-  fetchData();
-
-  //display a link to the unformated data 
-  let a = createA(`https://ssd.jpl.nasa.gov/api/horizons.${apiUrl}`, 'the data', '_blank');
-  a.position(width/2, 0);
-
-  dateSlider = createSlider(0, 100, 0); // Set initial range, you can adjust this
-  dateSlider.position(10, fetchDataButton.y + 25);
-  dateSlider.input(updateSelectedDate); // Call updateSelectedDate when the slider is moved
-
-  selectedDate = createP('Selected Date: ');
-  selectedDate.position(10, stepSizeInput.y + 3 * 25);
-
-  text("zoom",width/4, fetchDataButton.y + 20 )
-  zoomSlider = createSlider(0.1, 10, 1, 0); // Set initial range and step
-  zoomSlider.position(width/4, fetchDataButton.y + 25);
-  zoomSlider.input(updateZoomFactor);
 }
 
 
@@ -225,24 +191,21 @@ if (distanceToMouse < 8) { // Assuming the radius of the ellipse is 8
     
       text(`Mean Anomaly ${dataObjects[j].ma[mappedStep]} `, xOffset, yOffset);
       yOffset += 25;
-    
 }
-
-        // Draw the planet
-        fill(0);
-        ellipse(pos.x , pos.y, 8); //draw planet
+    // Draw the planet
+    fill(0);
+   ellipse(pos.x , pos.y, 8); //draw planet
   }
 
-      //the sun
-      push();
-      fill('yellow');
-      strokeWeight(1);
-      stroke(0);
-      ellipse(0, 0, 8, 8);
-      pop();
+   //the sun
+  push();
+  fill('yellow');
+  strokeWeight(1);
+  stroke(0);
+  ellipse(0, 0, 8, 8);
+  pop();
 
 }
-
 
 function toRadians(deg){
 	return deg * (Math.PI / 180);
@@ -267,58 +230,6 @@ function EccAnom(ec, m) {
 
 	return Math.round(E * Math.pow(10, 6)) / Math.pow(10, 6);
 }
-
-//clears the data object array when the selected date is changed
-function inputChanged() {
-  dataObjects = [];
-  //let inputValue = inputElement.value();
-  console.log("cleared planet array");
-}
-
-// Function to update slider range
-function updateSliderRange(startDate, endDate) {
-  // Set the minimum and maximum values of the slider based on the start and end dates
-  const startTimestamp = new Date(startDate).getTime();
-  const endTimestamp = new Date(endDate).getTime();
-  const stepMilliseconds = parseStepSize(stepSizeInput.value());
-  const totalSteps = Math.floor((endTimestamp - startTimestamp) / stepMilliseconds);
-
-  // Update the slider range
-  dateSlider.attribute('min',startTimestamp);
-   dateSlider.attribute('max',endTimestamp);
-   dateSlider.attribute('step', stepMilliseconds);
-
-}
-
-function updateSelectedDate() {
-  let currentDate = new Date(startDateInput.value());
-  let selectedStep = dateSlider.value();
-  let selectedTimestamp = currentDate.getTime() + selectedStep * parseFloat(stepSizeInput.value()) * 24 * 60 * 60 * 1000;
-  let selectedDateObj = new Date(selectedStep);
-  selectedDate.html('Selected Date: ' + selectedDateObj.toDateString());
-}
-
-
-// Create select input with label
-function createSelectInput(label, x, y, options) {
-  createInputLabel(label, x, y);
-  let selectVar = createSelect();
-  selectVar.position(150, y);
-  for (let option of options) {
-    selectVar.option(option.label, option.value);
-  }
-  return selectVar;
-}
-
-// Create input with label
-function createInputWithLabel(label, x, y, defaultValue) {
-  createInputLabel(label, x, y);
-  let inputVar = createInput(defaultValue);
-  inputVar.position(150, y);
-  return inputVar;
-}
-
-
 
 // Function to calculate the total number of steps between two dates
 function calculateTotalSteps(startDate, endDate, stepSize) {
@@ -347,27 +258,6 @@ function extractEphemerisBlock(text) {
   } else {
     return null;
   }
-}
-
-// Function to create input label
-function createInputLabel(label, x, y) {
-  textAlign(LEFT);
-  textSize(14);
-  text(label, x, y + 12);
-}
-
-// Function to position input elements
-function positionInputs() {
-  let inputX = 150;
-  let inputY = 10;
-  let inputSpacing = 25;
-
-  observerLocationInput.position(inputX, inputY + inputSpacing);
-  startDateInput.position(inputX, inputY + 2 * inputSpacing);
-  endDateInput.position(inputX, inputY + 3 * inputSpacing);
-  stepSizeInput.position(inputX, inputY + 4 * inputSpacing);
-  quantitiesInput.position(inputX, inputY + 5 * inputSpacing);
-  dataFormatInput.position(inputX, inputY + 6 * inputSpacing);
 }
 
 // Function to get nested property with checks
@@ -459,6 +349,98 @@ function parseEphemerisData(data) {
   return newDataObject;
 }
 
+/////////////////////
+// INPUT FUNCTIONS //
+/////////////////////
+
+
+// Function to create all input elements
+function createInputElements() {
+  commandSelect = createInputElement('Command:', 10, 10, 'select', null, planetOptions);
+  startDateInput = createInputElement('Start Date:', 10, 35, 'input', '2006-01-01');
+  endDateInput = createInputElement('End Date:', 10, 65, 'input', '2006-01-20');
+  stepSizeInput = createInputElement('Step Size:', 10, 95, 'input', '1%20d');
+  //  Other inputs, i've let these out because the visualization is dependent on the certain values
+    //  observerLocationInput = createInputElement('Observer Location:', 300, 35, 'input', '500@10');
+    //  quantitiesInput = createInputElement('Quantities:', 300, 65, 'input', '1,3,4,9,20,23,24,29');
+    //  dataFormatInput = createInputElement('Data Format:', 300, 95, 'input', 'json');
+  
+  // Attach an input event listener
+  startDateInput.changed(inputChanged);
+  endDateInput.changed(inputChanged);
+  
+  let fetchDataButton = createButton('Fetch Data');
+  fetchDataButton.mousePressed(fetchData);
+  fetchDataButton.position(10, stepSizeInput.y + 25);
+  
+  dateSlider = createSlider(0, 100, 0); // Set initial range, you can adjust this
+  dateSlider.position(10, fetchDataButton.y + 25);
+  dateSlider.input(updateSelectedDate); // Call updateSelectedDate when the slider is moved
+  
+  selectedDate = createP('Selected Date: ');
+  selectedDate.position(10, stepSizeInput.y + 3 * 25);
+  
+  text("zoom",width/4, fetchDataButton.y + 20 )
+  zoomSlider = createSlider(0.1, 10, 1, 0); // Set initial range and step
+  zoomSlider.position(width/4, fetchDataButton.y + 25);
+  zoomSlider.input(updateZoomFactor);
+  }
+
+// create inputs + their labels and position them
+function createInputElement(label, x, y, type, defaultValue, options) {
+    let inputElement;
+    if (type === 'select') {
+      inputElement = createSelect();
+      for (let option of options) {
+        inputElement.option(option.label, option.value);
+      }
+    } else {
+      inputElement = createInput(defaultValue);
+    }
+  
+    // Position the input element
+    inputElement.position(x + 125, y);
+  
+    // Create and position the label after the input element
+    textAlign(LEFT);
+    textSize(14);
+    text(label, x, y + 15);
+  
+    return inputElement;
+ }
+  
+
+//clears the data object array when the selected date is changed
+function inputChanged() {
+  dataObjects = [];
+  console.log("cleared planet array");
+  fetchData();
+}
+
+// Function to update slider range based on start and end dates
+function updateSliderRange(startDate, endDate) {
+  // Set the minimum and maximum values of the slider based on the start and end dates
+  const startTimestamp = new Date(startDate).getTime();
+  const endTimestamp = new Date(endDate).getTime();
+  const stepMilliseconds = parseStepSize(stepSizeInput.value());
+  const totalSteps = Math.floor((endTimestamp - startTimestamp) / stepMilliseconds);
+
+  // Update the slider range
+  dateSlider.attribute('min',startTimestamp);
+  dateSlider.attribute('max',endTimestamp);
+  dateSlider.attribute('step', stepMilliseconds);
+}
+
+// Function to update selected date based on slider value
+function updateSelectedDate() {
+  let currentDate = new Date(startDateInput.value());
+  let selectedStep = dateSlider.value();
+  let selectedTimestamp = currentDate.getTime() + selectedStep * parseFloat(stepSizeInput.value()) * 24 * 60 * 60 * 1000;
+  let selectedDateObj = new Date(selectedStep);
+  selectedDate.html('Selected Date: ' + selectedDateObj.toDateString());
+}
+
+// Function to update the zoom factor based on the value of the zoom slider
 function updateZoomFactor() {
   zoomFactor = zoomSlider.value();
 }
