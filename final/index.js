@@ -15,7 +15,6 @@ app.get('/data', async (req, res) => {
     const db = client.db('PersonalData');
     const hinge = db.collection('hinge_matches');
     const hingeMatches = await hinge.find({}).toArray();
-
     res.json(hingeMatches);
   } catch (error) {
     console.error("Error connecting to MongoDB:", error);
