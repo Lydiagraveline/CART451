@@ -5,10 +5,12 @@ const { MongoClient } = require('mongodb');
 const app = express(); //make an instance of express
 const mongoURI = 'mongodb+srv://lydiagraveline20:huffpuff123@cluster1.4ht5yiw.mongodb.net/';
 const client = new MongoClient(mongoURI, {});
-
+const fs = require('fs');
 app.use(express.static('public'));
 
-app.get('/data', async (req, res) => {
+
+//send the hinge data
+app.get('/hingeData', async (req, res) => {
   try {
     await client.connect();
     console.log("Connected to MongoDB");
@@ -25,6 +27,26 @@ app.get('/data', async (req, res) => {
     }
   }
 });
-app.listen(portNumber, () => {
+
+//Instagram data
+   app.get('/instagramData', async (req, res) => {
+     try {
+       await client.connect();
+       const db = client.db('PersonalData');
+       const instagram = db.collection('instagramDM');
+      const inbox = await instagram.find({}).toArray();
+      res.json(inbox);
+     } catch (error) {
+       console.error("Error connecting to MongoDB:", error);
+       res.status(500).send('Error fetching data');
+     } finally {
+       if (client !== null) {
+         client.close();
+        }
+     }
+   });
+
+ 
+   app.listen(portNumber, () => {
     console.log("Server is running on port "+portNumber);
   });

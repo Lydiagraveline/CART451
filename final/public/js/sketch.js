@@ -47,6 +47,7 @@ initialize();
 
 //set up
 function setup() {
+  state = "start";
   onABubble = false;
   canvasWidth = windowWidth;
   canvasHeight = windowHeight; 
@@ -61,7 +62,7 @@ function setup() {
   buddingImg = loadImage('images/budding.png');
 
 
-  createNewButton(button, "Press to continue", 10, 10, changeState());
+  createNewButton(button, "change state", 10, 10, changeState);
 
   // button.mousePressed(function(){button.remove()})
 }
@@ -73,51 +74,56 @@ function createNewButton(btn, text, x, y, callback){
   btn.mousePressed(callback);
 }
 
-function changeState(){
+function changeState(thisState){
+  //state = thisState
 if (state == "start"){
   state = "hinge";
+} else if (state == "hinge"){
+  state = "start";
 }
 }
 
 function draw(){
   background(245);
+  fill(0)
+  text(state, 10 , 50);
+  fill(255, 255, 255, 50);
   if (state == 'start') {
     
   } else if (state == 'hinge') {
-    background(245);
-    fill(255, 255, 255, 50);
-    for (let i = 0; i < matches.length; i++) {
-      if (matches[i].contains(mouseX, mouseY)) {
-        matches[i].changeColor(200);
-        onABubble = true;
-      } else {
-        matches[i].changeColor(255);
-        onABubble = false;
-      }
-    if (matches[i].withered()){
-      // console.log("bye");
-    }
-    else if (matches[i].filter()){
-       matches.splice(i, 1);
-       //mouseReleased();
-       mousePressed()
-    } else {
-     // matches[i].init();
-      matches[i].display();
-    }
-  
-  }
-   
+    handleHingeFlowers();
   } 
   // else if (state == '3') {
   //   draw3();
   // }
 
-;
-
 }
 
-function handleHingeFlowers() {
+function handleHingeFlowers(){
+  for (let i = 0; i < matches.length; i++) {
+    if (matches[i].contains(mouseX, mouseY)) {
+      matches[i].changeColor(200);
+      onABubble = true;
+    } else {
+      matches[i].changeColor(255);
+      onABubble = false;
+    }
+  if (matches[i].withered()){
+    matches.splice(i, 1);
+    // console.log("bye");
+  }
+  else if (matches[i].filter()){
+     matches.splice(i, 1);
+     //mouseReleased();
+     mousePressed()
+  } else {
+   // matches[i].init();
+    matches[i].display();
+  }
+}
+}
+
+function createHingeFlowers() {
   for (let i = matches.length - 1; i >= 0; i--) {
     if (matches[i].contains(mouseX, mouseY)) {
       matches[i].changeState();
@@ -134,12 +140,12 @@ function handleHingeFlowers() {
 
 // draw the flowers 
 function touchMoved() {
-  handleHingeFlowers();
+  createHingeFlowers();
   }
 
   // add one flower at a time, and change the flower state
 function mousePressed() {
-  handleHingeFlowers();
+  createHingeFlowers();
 
 }
 
