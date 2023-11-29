@@ -22,7 +22,7 @@ async function fetchData(path) {
 //preload the data & media
 async function preload(){
     // Fetch data and assign them to the variables
-    hingeData = await fetchData('/hingeData');//initialize();
+   hingeData = await fetchData('/hingeData');//initialize();
     instagramData = await fetchData('/instagramData');
 }
 
@@ -35,8 +35,6 @@ function setup() {
 //draw
 function draw(){
     background(245);
-    text("we are drawing", width/2, height/2);
-
  }
 
 
