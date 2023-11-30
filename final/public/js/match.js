@@ -1,4 +1,3 @@
-
 // class for hinge matches
 class Match {
     constructor(match) {

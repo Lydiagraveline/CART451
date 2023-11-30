@@ -17,22 +17,68 @@ let state = "start" //can be "start", "hinge"
 let button;
 
 
+async function fetchData(path, className) {
+  try {
+      const response = await fetch(path);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const result = await response.json();
+      // const classObject = createClassObj(result, className);
+       console.log(result);
+      // console.log(classObject);
+      return result; //return the data as an object
+    } catch (error) {
+      console.error('Error fetching hinge data:', error);
+      return [];
+    }
+}
+
+function preload() {
+// hingeMatches = initialize();//intialize('/hingeData');
+//console.log(hingeData);
+fetch('/hingeData')
+.then(response => {
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  // console.log("response was ok ", response)
+  return response.json();
+})
+.then(result => {
+  // Handle the loaded JSON data
+  if (result) {
+     hingeMatches = result;
+    // console.log("Found data!", result);
+    // createObjects();
+    //return result;
+  } else {
+    console.error('Data not found');
+  }
+})
+.catch(error => {
+  console.error('Error fetching data:', error);
+});
+}
+
 // Function to initialize the canvas and visualization
 function initialize() {
   // Make a fetch request to load JSON data
-  fetch('/data')
+  fetch('/hingeData')
     .then(response => {
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
+      console.log("response was ok ", response)
       return response.json();
     })
     .then(result => {
       // Handle the loaded JSON data
       if (result) {
-        hingeMatches = result;
-        console.log("Found data!", hingeMatches);
+        // hingeMatches = result;
+         console.log("Found data!", result);
         // createObjects();
+        return result;
       } else {
         console.error('Data not found');
       }
@@ -43,10 +89,11 @@ function initialize() {
 }
 
 // Call the initialize function
-initialize();
+// initialize();
 
 //set up
 function setup() {
+  console.log("hingematches array ",hingeMatches);
   state = "start";
   onABubble = false;
   canvasWidth = windowWidth;

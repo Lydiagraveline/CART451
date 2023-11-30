@@ -1,9 +1,11 @@
+//main.js
 let state = 'loading' //can be loading, loaded
-
+let imgIndex = 0 //the currently displayed image
 // variables to store fetched data
 let hingeData = [];
 let instagramData = [];
 let images = [];
+let img;
 
 // Function to fetch data from the server
 async function fetchData(path, className) {
@@ -14,7 +16,7 @@ async function fetchData(path, className) {
         }
         const result = await response.json();
         const classObject = createClassObj(result, className);
-        console.log(result);
+        // console.log(result);
         console.log(classObject);
         return classObject; //return the data as an object
       } catch (error) {
@@ -28,11 +30,11 @@ async function preload(){
    try {
     // Fetch data and assign them to the variables
     hingeData = await fetchData('/hingeData');
-    instagramData = await fetchData('/instagramData', Instagram);
-    images = await fetchData('/mediaData', Image);
+    // instagramData = await fetchData('/instagramData', Instagram);
+    images = await fetchData('/mediaData', ImageClass);
     // change the state once data is fetch
     state = "loaded"
-    console.log("changed state to ", state);
+    setup(); //cal setup again
 } catch (error) {
     console.error('Error during preload:', error);
 }
@@ -53,16 +55,27 @@ function createClassObj(result, className){
 
 //set up
 function setup() {
+    console.log("setting up");
     createCanvas(windowWidth, windowHeight);
   }
 
 //draw
 function draw(){
-    background(245);
+     background(245);
+    text(state, width/2, height/2 - 10);
     if (state == 'loading'){
-        text('loading data...', width/2, height/2);
+        text('loading data...', width/2, height/2 + 200);
+        
     } else if(state == 'loaded' ){
-        // images[5].display();
+        text('Lydia', width/2, height/2); 
+        images[imgIndex].display();
     }
-
  }
+
+function mouseClicked(){
+  if (imgIndex < images.length - 1){
+  imgIndex++
+  } else {
+  imgIndex = 0;
+  }
+}
