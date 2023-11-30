@@ -2,6 +2,8 @@ class Instagram{
     constructor(data){
         this.chat = data.title;
     } 
+
+
 }
 
 //Saving for later

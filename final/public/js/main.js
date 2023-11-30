@@ -1,3 +1,4 @@
+let state = 'loading' //can be loading, loaded
 
 // variables to store fetched data
 let hingeData = [];
@@ -13,7 +14,7 @@ async function fetchData(path, className) {
         }
         const result = await response.json();
         const classObject = createClassObj(result, className);
-        // console.log(classObject);
+        console.log(classObject);
         return classObject; //return the data as an object
       } catch (error) {
         console.error('Error fetching hinge data:', error);
@@ -23,10 +24,17 @@ async function fetchData(path, className) {
 
 //preload the data & media
 async function preload(){
+   try {
     // Fetch data and assign them to the variables
-   hingeData = await fetchData('/hingeData');//initialize();
-   instagramData = await fetchData('/instagramData', Instagram);
-   images = await fetchData('/mediaData', Image);
+    hingeData = await fetchData('/hingeData');
+    instagramData = await fetchData('/instagramData', Instagram);
+    images = await fetchData('/mediaData', Image);
+    // change the state once data is fetch
+    state = "loaded"
+    console.log("changed state to ", state);
+} catch (error) {
+    console.error('Error during preload:', error);
+}
 }
 
 function createClassObj(result, className){
@@ -50,5 +58,11 @@ function setup() {
 //draw
 function draw(){
     background(245);
+    if (state == 'loading'){
+        text('loading data...', width/2, height/2);
+    } else if(state == 'loaded' ){
+        images[0].display();
+    }
+
 
  }
