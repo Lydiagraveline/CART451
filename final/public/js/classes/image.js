@@ -1,10 +1,14 @@
 class Image{
     constructor(data){
-        this.fileName = data.filename;
+        this.filename = data.filename;
         this.timeStamp = data.timeStamp;
     } 
-    
+
     display(){
-        text("this is an image", width/2, height/2);
+        text(this.filename, width/2, height/2);
+        // console.log(this.timeStamp);
+        // text(this.timeStamp, width/2, height/2 - 10);
     }
+
+
 }

@@ -14,6 +14,7 @@ async function fetchData(path, className) {
         }
         const result = await response.json();
         const classObject = createClassObj(result, className);
+        console.log(result);
         console.log(classObject);
         return classObject; //return the data as an object
       } catch (error) {
@@ -61,8 +62,7 @@ function draw(){
     if (state == 'loading'){
         text('loading data...', width/2, height/2);
     } else if(state == 'loaded' ){
-        images[0].display();
+        images[5].display();
     }
-
 
  }

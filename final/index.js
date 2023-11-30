@@ -9,15 +9,25 @@ const fs = require('fs');
 app.use(express.static('public'));
 
 
-const fetchDataFromCollection = async (res, collectionName) => {
+const fetchDataFromCollection = async (res, collectionName, filterCallback) => {
   try {
     await client.connect();
     console.log("Connected to MongoDB");
 
     const db = client.db('PersonalData');
     const collection = db.collection(collectionName);
+   
+    let data;
 
-    const data = await collection.find({}).toArray();
+    if (typeof filterCallback === 'function') {
+        // If a filter callback is provided, use it to filter the data
+        data = await collection.find({}).toArray();
+        data = data.filter(filterCallback);
+    } else {
+        // If no filter callback is provided, fetch all data
+        data = await collection.find({}).toArray();
+    }
+
     res.json(data);
   } catch (error) {
     console.error(`Error connecting to MongoDB for ${collectionName} data:`, error);
@@ -39,9 +49,18 @@ app.get('/instagramData', async (req, res) => {
   await fetchDataFromCollection(res, 'instagramDM');
 });
 
+
+// Define a filter callback for mediaData
+const filterMediaData = (item) => item.creationTimestampMs !== undefined;
+
+// Define sort options for mediaData (oldest to newest)
+const sortMediaDataOptions = { creationTimestampMs: 1 };
+
+
+
 // Endpoint for 'instagramDM' collection
 app.get('/mediaData', async (req, res) => {
-  await fetchDataFromCollection(res, 'media');
+  await fetchDataFromCollection(res, 'media', filterMediaData);
 });
 
 //send the hinge data
