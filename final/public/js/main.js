@@ -55,26 +55,29 @@ function createClassObj(result, className){
 
 //set up
 function setup() {
-    console.log("setting up");
     createCanvas(windowWidth, windowHeight);
+    imageMode(CENTER);
   }
 
 //draw
 function draw(){
      background(245);
-    text(state, width/2, height/2 - 10);
+    // text(state, width/2, height/2 - 10);
     if (state == 'loading'){
         text('loading data...', width/2, height/2 + 200);
         
     } else if(state == 'loaded' ){
-        text('Lydia', width/2, height/2); 
         images[imgIndex].display();
     }
  }
 
 function mouseClicked(){
   if (imgIndex < images.length - 1){
-  imgIndex++
+    if (mouseX > width/2){
+      imgIndex++
+    } else if (mouseX < width/2 && imgIndex > 0){
+      imgIndex--
+    }
   } else {
   imgIndex = 0;
   }

@@ -1,7 +1,7 @@
 class ImageClass{
     constructor(data){
         this.filename = data.filename;
-        this.timeStamp =  "time stamp"//this.formatTimestamp(int(data.creationTimestampMs));
+        this.timeStamp =  this.formatTimestamp(int(data.creationTimestampMs));
         this.path = 'media/' + this.filename
          this.image = loadImage(this.path);
          //('../../media/' + this.filename, () => {
@@ -13,14 +13,24 @@ class ImageClass{
         return this.image = loadImage(this.path);
     }
 
+    displayImage(img, x, y, minSize, maxSize) { 
+
+        // Calculate the scaling factor based on the maximum size
+        let scaleFactor = Math.max(minSize / max(img.width, img.height), maxSize / max(img.width, img.height));
+      
+        // Calculate the scaled width and height
+        let scaledWidth = img.width * scaleFactor;
+        let scaledHeight = img.height * scaleFactor;
+      
+        // Draw the image at the specified position
+        image(img, x, y, scaledWidth, scaledHeight);
+      }
 
     display(){
-        // let img = loadImage('../media/aroundthemill.jpg');
         text(this.filename, width/2, height/2 + 200);
-        //const formattedDate = this.formatTimestamp(this.timeStamp * 1000);
         text(this.timeStamp, width / 2, height / 2 + 215);
-        //text(formattedDate, width / 2, height / 2 + 30);
-        image(this.image, 0, 0);
+
+        this.displayImage(this.image, width / 2, height / 2, 100, 300);
     }
 
     formatTimestamp(millis) {
