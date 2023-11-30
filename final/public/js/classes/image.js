@@ -1,7 +1,7 @@
 class Image{
     constructor(data){
         this.filename = data.filename;
-        this.timeStamp = data.timeStamp;
+        this.timeStamp = data.creationTimestampMs;
     } 
 
     display(){

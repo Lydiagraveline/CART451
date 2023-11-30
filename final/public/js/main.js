@@ -62,7 +62,7 @@ function draw(){
     if (state == 'loading'){
         text('loading data...', width/2, height/2);
     } else if(state == 'loaded' ){
-        images[5].display();
+        // images[5].display();
     }
 
  }

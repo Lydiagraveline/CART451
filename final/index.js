@@ -9,7 +9,7 @@ const fs = require('fs');
 app.use(express.static('public'));
 
 
-const fetchDataFromCollection = async (res, collectionName, filterCallback) => {
+const fetchDataFromCollection = async (res, collectionName, callback) => {
   try {
     await client.connect();
     console.log("Connected to MongoDB");
@@ -19,10 +19,11 @@ const fetchDataFromCollection = async (res, collectionName, filterCallback) => {
    
     let data;
 
-    if (typeof filterCallback === 'function') {
+    // Optional, call a function to filter or sort the data
+    if (typeof callback === 'function') {
         // If a filter callback is provided, use it to filter the data
-        data = await collection.find({}).toArray();
-        data = data.filter(filterCallback);
+      data = await collection.find({}).toArray();
+       data = filterAndSortMedia(data); // data = data.filter(filterCallback);
     } else {
         // If no filter callback is provided, fetch all data
         data = await collection.find({}).toArray();
@@ -39,6 +40,15 @@ const fetchDataFromCollection = async (res, collectionName, filterCallback) => {
   }
 };
 
+//callback for mediaData
+const filterAndSortMedia = (mediaData) => {
+  // Filter out items without creationTimestampMs
+  const filteredData = mediaData.filter((item) => item.creationTimestampMs !== undefined);
+  // Sort the filtered data by creationTimestampMs
+  const sortedData = filteredData.sort((a, b) => a.creationTimestampMs - b.creationTimestampMs);
+  return sortedData;
+};
+
 // Endpoint for 'hinge_matches' collection
 app.get('/hingeData', async (req, res) => {
   await fetchDataFromCollection(res, 'hinge_matches');
@@ -49,18 +59,9 @@ app.get('/instagramData', async (req, res) => {
   await fetchDataFromCollection(res, 'instagramDM');
 });
 
-
-// Define a filter callback for mediaData
-const filterMediaData = (item) => item.creationTimestampMs !== undefined;
-
-// Define sort options for mediaData (oldest to newest)
-const sortMediaDataOptions = { creationTimestampMs: 1 };
-
-
-
 // Endpoint for 'instagramDM' collection
 app.get('/mediaData', async (req, res) => {
-  await fetchDataFromCollection(res, 'media', filterMediaData);
+  await fetchDataFromCollection(res, 'media', filterAndSortMedia);
 });
 
 //send the hinge data
