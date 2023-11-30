@@ -39,6 +39,11 @@ app.get('/instagramData', async (req, res) => {
   await fetchDataFromCollection(res, 'instagramDM');
 });
 
+// Endpoint for 'instagramDM' collection
+app.get('/mediaData', async (req, res) => {
+  await fetchDataFromCollection(res, 'media');
+});
+
 //send the hinge data
 // app.get('/hingeData', async (req, res) => {
 //   try {
