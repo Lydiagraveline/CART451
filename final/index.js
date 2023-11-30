@@ -63,9 +63,8 @@ app.get('/mediaData', async (req, res) => {
 
 // Endpoint for 'user' collection
 app.get('/userData', async (req, res) => {
-  await fetchDataFromCollection(res, 'user');
+  await fetchDataFromCollection(res, 'myUser');
 });
-
 
 app.listen(portNumber, () => {
   console.log("Server is running on port "+portNumber);
