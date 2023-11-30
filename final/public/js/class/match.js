@@ -16,7 +16,7 @@ class Match {
       this.met = match.we_met || false
       this.text;
       this.state = "neutral"; // "sent like", "matched", 
-      this.img = budImg;
+      // this.img = loadImage('images/bug.png')//budImg;
       this.chatIndex = 0;
     }
   

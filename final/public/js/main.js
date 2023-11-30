@@ -5,7 +5,7 @@ let imgIndex = 0 //the currently displayed image
 let hingeData = [];
 let instagramData = [];
 let images = [];
-let img;
+let myUserData = [];
 
 // Function to fetch data from the server
 async function fetchData(path, className) {
@@ -16,7 +16,6 @@ async function fetchData(path, className) {
         }
         const result = await response.json();
         const classObject = createClassObj(result, className);
-        // console.log(result);
         console.log(classObject);
         return classObject; //return the data as an object
       } catch (error) {
@@ -29,9 +28,10 @@ async function fetchData(path, className) {
 async function preload(){
    try {
     // Fetch data and assign them to the variables
-    hingeData = await fetchData('/hingeData');
+    hingeData = await fetchData('/hingeData', Match);
     // instagramData = await fetchData('/instagramData', Instagram);
     images = await fetchData('/mediaData', ImageClass);
+    myUserData = await fetchData('/userData');
     // change the state once data is fetch
     state = "loaded"
     setup(); //cal setup again
@@ -71,14 +71,6 @@ function draw(){
     }
  }
 
-function mouseClicked(){
-  if (imgIndex < images.length - 1){
-    if (mouseX > width/2){
-      imgIndex++
-    } else if (mouseX < width/2 && imgIndex > 0){
-      imgIndex--
-    }
-  } else {
-  imgIndex = 0;
-  }
+function mousePressed(){
+  images[imgIndex].mousePressed();
 }

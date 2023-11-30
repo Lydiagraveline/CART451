@@ -3,15 +3,8 @@ class ImageClass{
         this.filename = data.filename;
         this.timeStamp =  this.formatTimestamp(int(data.creationTimestampMs));
         this.path = 'media/' + this.filename
-         this.image = loadImage(this.path);
-         //('../../media/' + this.filename, () => {
-        //     console.log('Image loaded:', this.filename);
-        // });
+        this.image = loadImage(this.path);
     } 
-
-    initialize(){
-        return this.image = loadImage(this.path);
-    }
 
     displayImage(img, x, y, minSize, maxSize) { 
 
@@ -37,4 +30,16 @@ class ImageClass{
         let date = new Date(millis);
          return date
     }
+
+    mousePressed(){
+        if (imgIndex < images.length - 1){
+          if (mouseX > width/2){
+            imgIndex++
+          } else if (mouseX < width/2 && imgIndex > 0){
+            imgIndex--
+          }
+        } else {
+        imgIndex = 0;
+        }
+      }
 }
