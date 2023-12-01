@@ -15,9 +15,6 @@ let interactiveTexts = [];
 
  let displayedTextIndex = 1;
 
- //let network;
-
-
 // Function to fetch data from the server
 async function fetchData(path, className) {
     try {
@@ -70,37 +67,35 @@ function setup() {
     imageMode(CENTER);
     textAlign(CENTER, CENTER);
     if(state == "loaded"){
-      // network = new Network();
-      // createNodesAndEdges(width/2, height/2);
-      // interactiveTexts.push(new InteractiveText('For data you are, and to data you shall return', 
-      // width/2, height/2, 
-      // 'word', 
-      // () => {
-      //   interactiveTexts.splice(0, 1);
-      //   cursor(ARROW)
-        // state = 'main';
-        // let text = 'name: Lydia \n last name: Graveline';
-        //   createInteractiveText(text, width/2, height/2 - 25, ()=>{
-        //   if (displayedTextIndex <interactiveTexts.length ){
-        //     displayedTextIndex += 1;
-        //   }
+      interactiveTexts.push(new InteractiveText('For data you are, and to data you shall return', 
+      width/2, height/2, 
+      'word', 
+      () => {
+        interactiveTexts.splice(0, 1);
+        cursor(ARROW)
+        state = 'main';
+        let text = 'name: Lydia \n last name: Graveline';
+          createInteractiveText(text, width/2, height/2 - 25, ()=>{
+          if (displayedTextIndex <interactiveTexts.length ){
+            displayedTextIndex += 1;
+          }
           
-        //    state = "test"
-        // });
-      //   let y = 100;
-      //   let x = 100;
-      //   for(let i=0; i < myUserData.length; i++){
-      //     let nameObject = myUserData[i].name;
-      //     let nameString = JSON.stringify(nameObject, null, 2);
-      //     createInteractiveText(myUserData[i].source, x, y, ()=>{
-      //       //console.log("hi");
-      //     });
-      //     x += 100;
-      //  }
+           state = "test"
+        });
+        let y = 100;
+        let x = 100;
+        for(let i=0; i < myUserData.length; i++){
+          let nameObject = myUserData[i].name;
+          let nameString = JSON.stringify(nameObject, null, 2);
+          createInteractiveText(myUserData[i].source, x, y, ()=>{
+            //console.log("hi");
+          });
+          x += 100;
+       }
       
-      //   console.log("hi")
+        console.log("hi")
     
-      // }))
+      }))
     }
   }
 
@@ -117,17 +112,14 @@ function draw(){
       }
     } else if(state == 'main' ){
       text (state, 20, 20);
-      // network.drawEdges();
-      // network.drawNodes();
-    
+      for(let i=0; i < displayedTextIndex; i++){
+        interactiveTexts[i].display();
+     }
 
     }else if(state == 'gallery' ){
       images[imgIndex].display();
     }
  }
-
- 
-
 
 function createInteractiveText(string, x, y, callback){
   // console.log(string);
@@ -146,14 +138,11 @@ function mousePressed(){
   images[imgIndex].mousePressed();
 
   if(state == 'main'){
-    // createNodesAndEdges(mouseX, mouseY);
   }
 
   for(let i=0; i < interactiveTexts.length; i++){
     interactiveTexts[i].click();
   }
-
-  // console.log(interactiveTexts.length);
 }
 
 
@@ -186,11 +175,6 @@ class InteractiveText {
         text(this.text, this.x, this.y);
       }
     pop();
-
-    // //if the user clicks on the text, call the callback
-    // if (mousePressed() && this.isCursorOverText() ) {
-    //   this.callback();
-    // }
   }
 
   isCursorOverText() {
