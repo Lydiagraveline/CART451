@@ -13,6 +13,10 @@ let interactiveTexts = [];
  var index = 0
  var lastMillis = 0;
 
+ let displayedTextIndex = 1;
+
+ //let network;
+
 
 // Function to fetch data from the server
 async function fetchData(path, className) {
@@ -66,10 +70,39 @@ function setup() {
     imageMode(CENTER);
     textAlign(CENTER, CENTER);
     if(state == "loaded"){
-      interactiveTexts.push(new InteractiveText('For data you are, and to data you shall return', width/2, height/2, 'typewriter', createNewTexts))
+      // network = new Network();
+      // createNodesAndEdges(width/2, height/2);
+      // interactiveTexts.push(new InteractiveText('For data you are, and to data you shall return', 
+      // width/2, height/2, 
+      // 'word', 
+      // () => {
+      //   interactiveTexts.splice(0, 1);
+      //   cursor(ARROW)
+        // state = 'main';
+        // let text = 'name: Lydia \n last name: Graveline';
+        //   createInteractiveText(text, width/2, height/2 - 25, ()=>{
+        //   if (displayedTextIndex <interactiveTexts.length ){
+        //     displayedTextIndex += 1;
+        //   }
+          
+        //    state = "test"
+        // });
+      //   let y = 100;
+      //   let x = 100;
+      //   for(let i=0; i < myUserData.length; i++){
+      //     let nameObject = myUserData[i].name;
+      //     let nameString = JSON.stringify(nameObject, null, 2);
+      //     createInteractiveText(myUserData[i].source, x, y, ()=>{
+      //       //console.log("hi");
+      //     });
+      //     x += 100;
+      //  }
+      
+      //   console.log("hi")
+    
+      // }))
     }
   }
-
 
 //draw
 function draw(){
@@ -79,46 +112,48 @@ function draw(){
         text('loading data...', width/2, height/2 + 200);
         
     } else if(state == 'loaded' ){
-      for(let i=0; i < interactiveTexts.length; i++){
-         interactiveTexts[i].display();
+      for(let i=0; i < displayedTextIndex; i++){
+         interactiveTexts[0].display();
       }
-      // interactiveTexts[0].display();
-      // let t2 = new InteractiveText('this is a test', width/2, 100);
-      // let t = new InteractiveText('For data you are, and to data you shall return', width/2, height/2, 'typewriter', () => {
-      // console.log("Text clicked!");
-      // t2.display();
-      
-      // cursor(ARROW);
-      // state = "gallery";
-      // });
-      // t.display();
-      
-    } else if(state == 'gallery' ){
-      images[imgIndex].display();
+    } else if(state == 'main' ){
+      text (state, 20, 20);
+      // network.drawEdges();
+      // network.drawNodes();
+    
+
     }else if(state == 'gallery' ){
       images[imgIndex].display();
     }
  }
+
  
- function createNewTexts(){
-  //delete the original line of text
-  interactiveTexts.splice(0, 1);
-  // add new lines of text
-  // interactiveTexts.push(new InteractiveText('this is a test', width/2, height/2 - 50, 'typewriter'))
-  let text = 'name: Lydia \n last name: Graveline';
-  interactiveTexts.push(new InteractiveText(text, width/2, height/2 - 25, 'typewriter'))
-  interactiveTexts.push(new InteractiveText('birthday: 2002-02-26', width/2, height/2, 'typewriter', () => {
- // state = "gallery";
-  }))
+
+
+function createInteractiveText(string, x, y, callback){
+  // console.log(string);
+  let newText = new InteractiveText(
+    string,
+    x,
+    y,
+    'typewriter',
+    callback
+  );
+  interactiveTexts.push(newText);
 }
 
 
 function mousePressed(){
   images[imgIndex].mousePressed();
 
+  if(state == 'main'){
+    // createNodesAndEdges(mouseX, mouseY);
+  }
+
   for(let i=0; i < interactiveTexts.length; i++){
     interactiveTexts[i].click();
   }
+
+  // console.log(interactiveTexts.length);
 }
 
 
@@ -132,7 +167,7 @@ class InteractiveText {
     this.callback = callback;
     this.typeMethod = typeMethod; // can be 'typewriter' '
     this.typingIndex = 0;
-    this.delete;
+    this.lastMillis = 0;
   }
 
   display() {
@@ -145,8 +180,8 @@ class InteractiveText {
       this.textColor =  color(0);
     }
     fill(this.textColor);
-      if(this.typeMethod == "typewriter") {
-        this.typeWriter(this.text, this.x, this.y);
+       if(this.typeMethod == "typewriter" || this.typeMethod == "word") {
+        this.typeWriter(this.text);
       } else {
         text(this.text, this.x, this.y);
       }
@@ -174,17 +209,20 @@ class InteractiveText {
   }
   
   //https://editor.p5js.org/cfoss/sketches/SJggPXhcQ
-  typeWriter(message, x, y){
+  typeWriter(message){
   text(message.substring(0, this.typingIndex ), this.x, this.y);
-	if (millis() > lastMillis + 200) {
-		this.typingIndex = 	this.typingIndex  + 1;
+	if (millis() > this.lastMillis + 200) {
+		this.typingIndex = this.typingIndex  + 1;
 		//ONE WORD AT A TIME
+    if (this.typeMethod == "word") {
 		while(message.charAt(	this.typingIndex ) != ' ' &&
     this.typingIndex  < message.length){
       this.typingIndex = 	this.typingIndex + 1;
 		}
-		lastMillis = millis();
+  }
+		this.lastMillis = millis();
 	}
 }
 
 }
+
