@@ -42,9 +42,10 @@ class InteractiveText {
              return this.isHovered; 
     }
   
-    click() {
-        // Trigger callback if clicked and a callback is provided
-        if (this.isHovered && this.callback) {
+    click(callback) {
+        if (this.isHovered && callback) {
+          callback();
+        } else if (this.isHovered && this.callback) {
           this.callback();
         }
      }

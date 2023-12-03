@@ -9,6 +9,7 @@ let matches = [];
 let index = 0;
 let images = [];
 let myUserData = [];
+let magneticPoetry;
 
 let hoverState;
 
@@ -16,7 +17,7 @@ let onABubble = false;
 
 // Interactive text objects
 let interactiveTexts = [];
-let introTxt, backTxt, hingeTxt, galleryTxt;
+let introTxt, backTxt, hingeTxt, galleryTxt, inferencesTxt;
 
 // Function to fetch data from the server
 async function fetchData(path, className) {
@@ -69,6 +70,13 @@ function changeStateToMain() {
   state = 'main menu';
 }
 
+function changeStateFromMain(newState){
+  console.log('click');
+  if (state === 'main menu') {
+    console.log('Changing state to ', newState);
+    state = newState;
+  }
+}
 function changeStateToHinge() {
   if (state === 'main menu') {
     console.log('Changing state to hinge');
@@ -83,14 +91,26 @@ function changeStateToGallery() {
   }
 }
 
+function changeStateToInferences() {
+  if (state === 'main menu') {
+    console.log('Changing state to inferences');
+    state = 'inferences';
+  }
+}
+
 //set up
 function setup() {
     createCanvas(windowWidth, windowHeight);
     imageMode(CENTER);
     textAlign(CENTER, CENTER);
     backTxt = new InteractiveText('go back', 50, 50, 'word', changeStateToMain);
-    hingeTxt = new InteractiveText('hinge', 50, 50, 'word', changeStateToHinge);
-    galleryTxt = new InteractiveText('gallery', 50, 100, 'word', changeStateToGallery);
+    hingeTxt = new InteractiveText('hinge', 50, 100, 'word');
+    galleryTxt = new InteractiveText('gallery', 50, 150, 'word');
+    inferencesTxt = new InteractiveText('inferences', 50, 200, 'word');
+
+    magneticPoetry = new Magnets();
+    console.log(magneticPoetry);
+    magneticPoetry.setup();
   
     introTxt = new InteractiveText('For data you are, and to data you shall return', 
       width/2, height/2, 'word', changeStateToMain);
@@ -112,8 +132,12 @@ function draw(){
   } else if (state == 'loaded') {
     introTxt.display();
   } else if (state == 'main menu') {
+    push();
+    textAlign(LEFT);
     galleryTxt.display();
     hingeTxt.display();
+    inferencesTxt.display();
+    pop();
 
     if (hingeTxt.checkHover()){
       hingeData.forEach((match) =>{
@@ -124,11 +148,12 @@ function draw(){
   } else if (state == 'gallery') {
     images[imgIndex].display();
   } else if (state == 'hinge') {
-    // hingeData.forEach((match) =>{
-    //    match.display();
-    // });
-    
     handleHingeFlowers();
+  } else if (state == 'inferences'){
+    // noLoop();
+    textAlign(LEFT);
+    magneticPoetry.draw();
+
   }
 
   // Display "go back" text when the state is not loading, loaded, or main menu
@@ -144,8 +169,15 @@ function mousePressed(){
   if (state == "loaded") {
     introTxt.click();
   } else if (state == "main menu") {
-    galleryTxt.click();
-    hingeTxt.click();
+    galleryTxt.click(()=>{
+      state = "gallery";
+    });
+    hingeTxt.click(()=>{
+      state = "hinge";
+    });
+    inferencesTxt.click(()=>{
+      state = "inferences";
+    });
   } else if (state !== 'loading' && state !== 'loaded' && state !== 'main menu') {
     backTxt.click();
   }
@@ -156,12 +188,11 @@ function mousePressed(){
   }
 
   if (state == 'hinge' && hoverState == false){
-    // let index = floor(random(hingeData.length))
      createHingeFlowers();
-    // hingeData[index].create();
-    // let newMatch = new Match(hingeMatches[index]);
-    // newMatch.init();
-    // matches.push(newMatch);
+  }
+
+  if (state == 'inferences' && hoverState == false){
+    magneticPoetry.mousePressed();
   }
 }
 
@@ -171,6 +202,22 @@ function touchMoved() {
   if (state == 'hinge'  && hoverState == false){
     createHingeFlowers();
   }
+}
+
+function mouseDragged() {
+  magneticPoetry.mouseDragged();
+}
+
+function mouseReleased() {
+  magneticPoetry.mouseReleased();
+}
+
+function doubleClicked() {
+  magneticPoetry.doubleClicked();
+}
+
+function keyPressed() {
+  magneticPoetry.keyPressed();
 }
 
 
