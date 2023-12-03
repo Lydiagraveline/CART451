@@ -37,7 +37,7 @@ async function fetchData(path, className) {
 async function preload() {
   try {
     // Fetch data and assign them to the variables
-    // hingeData = await fetchData('/hingeData', Match);
+    hingeData = await fetchData('/hingeData', AllMatches);
     hingeMatches = await fetchData('/hingeData');
     console.log(hingeMatches);
     images = await fetchData('/mediaData', ImageClass);
@@ -114,12 +114,20 @@ function draw(){
   } else if (state == 'main menu') {
     galleryTxt.display();
     hingeTxt.display();
+
+    if (hingeTxt.checkHover()){
+      hingeData.forEach((match) =>{
+        match.display();
+     });
+      //  draw(ellipse, width/2, height/2, 50);
+    }
   } else if (state == 'gallery') {
     images[imgIndex].display();
   } else if (state == 'hinge') {
-    hingeData.forEach((match) =>{
-      // match.display();
-    });
+    // hingeData.forEach((match) =>{
+    //    match.display();
+    // });
+    
     handleHingeFlowers();
   }
 

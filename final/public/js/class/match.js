@@ -174,7 +174,10 @@ class Match {
       fill(this.brightness, 125);
       //noFill();
       rect(this.x, this.y, this.w, this.h)
-      // ellipse(this.x, this.y, this.size * 2);
+ 
+        // ellipse(this.x, this.y, this.size * 2);
+     
+       
   
       noStroke();
       // Displays the image at point (0, height/2) at half size
