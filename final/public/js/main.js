@@ -1,5 +1,5 @@
 // Define the initial state and image index
-let state = 'loading'; // can be loading, loaded, main, gallery, hinge
+let state = 'loading'; // can be loading, loaded, main menu, gallery, hinge
 let imgIndex = 0; // the currently displayed image
 
 // Variables to store fetched data
@@ -54,32 +54,37 @@ function createClassObj(result, className) {
   }
 }
 
+// Callbacks for state changes
+function changeStateToMain() {
+  console.log('Changing state to main menu');
+  state = 'main menu';
+}
+
+function changeStateToHinge() {
+  if (state === 'main menu') {
+    console.log('Changing state to hinge');
+    state = 'hinge';
+  }
+}
+
+function changeStateToGallery() {
+  if (state === 'main menu') {
+    console.log('Changing state to gallery');
+    state = 'gallery';
+  }
+}
+
 //set up
 function setup() {
     createCanvas(windowWidth, windowHeight);
     imageMode(CENTER);
     textAlign(CENTER, CENTER);
-    backTxt = new InteractiveText('go back', 50, 50, "word", () => {
-      console.log('Changing state to loaded');
-      state = 'main';
-    });
-  
-    hingeTxt = new InteractiveText('hinge', 50, 50, "letter", () => {
-      if (state == "main") {
-        state = "hinge";
-      }
-    });
-  
-    galleryTxt = new InteractiveText('gallery', 50, 100, "letter", () => {
-      if (state == "main") {
-        state = "gallery";
-      }
-    });
+    backTxt = new InteractiveText('go back', 50, 50, 'word', changeStateToMain);
+    hingeTxt = new InteractiveText('hinge', 50, 50, 'word', changeStateToHinge);
+    galleryTxt = new InteractiveText('gallery', 50, 100, 'word', changeStateToGallery);
   
     introTxt = new InteractiveText('For data you are, and to data you shall return', 
-      width/2, height/2, 'word', () => {
-        state = 'main';
-      });
+      width/2, height/2, 'word', changeStateToMain);
   }
 
 // Draw function to display content based on the state
@@ -94,15 +99,15 @@ function draw(){
     text('loading data...', width/2, height/2 + 200);
   } else if (state == 'loaded') {
     introTxt.display();
-  } else if (state == 'main') {
+  } else if (state == 'main menu') {
     galleryTxt.display();
     hingeTxt.display();
   } else if (state == 'gallery') {
     images[imgIndex].display();
   }
 
-  // Display "go back" text when the state is not loading, loaded, or main
-  if (state !== 'loading' && state !== 'loaded' && state !== 'main') {
+  // Display "go back" text when the state is not loading, loaded, or main menu
+  if (state !== 'loading' && state !== 'loaded' && state !== 'main menu') {
     backTxt.display();
   }
  }
@@ -111,10 +116,10 @@ function mousePressed(){
   // Handle clicks based on the current state
   if (state == "loaded") {
     introTxt.click();
-  } else if (state == "main") {
+  } else if (state == "main menu") {
     galleryTxt.click();
     hingeTxt.click();
-  } else if (state !== 'loading' && state !== 'loaded' && state !== 'main') {
+  } else if (state !== 'loading' && state !== 'loaded' && state !== 'main menu') {
     backTxt.click();
   }
 
