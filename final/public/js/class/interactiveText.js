@@ -38,7 +38,8 @@ class InteractiveText {
       this.isHovered = mouseX > this.x - textWidth(this.text) / 2 &&
              mouseX < this.x + textWidth(this.text) / 2 &&
              mouseY > this.y - this.fontSize / 2 &&
-             mouseY < this.y + this.fontSize / 2;     
+             mouseY < this.y + this.fontSize / 2;    
+             return this.isHovered; 
     }
   
     click() {

@@ -6,10 +6,13 @@ let imgIndex = 0; // the currently displayed image
 let hingeData = [];
 let hingeMatches = [];
 let matches = [];
+let index = 0;
 let images = [];
 let myUserData = [];
 
-let onABubble;// = false;
+let hoverState;
+
+let onABubble = false;
 
 // Interactive text objects
 let interactiveTexts = [];
@@ -34,8 +37,9 @@ async function fetchData(path, className) {
 async function preload() {
   try {
     // Fetch data and assign them to the variables
-    hingeData = await fetchData('/hingeData', Match);
+    // hingeData = await fetchData('/hingeData', Match);
     hingeMatches = await fetchData('/hingeData');
+    console.log(hingeMatches);
     images = await fetchData('/mediaData', ImageClass);
     myUserData = await fetchData('/userData');
 
@@ -91,7 +95,7 @@ function setup() {
     introTxt = new InteractiveText('For data you are, and to data you shall return', 
       width/2, height/2, 'word', changeStateToMain);
     if (state !== 'loading'){
-      console.log("hingematches array ",hingeData);
+      //console.log("hingematches array ",hingeData);
     }
   }
 
@@ -114,13 +118,16 @@ function draw(){
     images[imgIndex].display();
   } else if (state == 'hinge') {
     hingeData.forEach((match) =>{
-      match.display();
+      // match.display();
     });
+    handleHingeFlowers();
   }
 
   // Display "go back" text when the state is not loading, loaded, or main menu
   if (state !== 'loading' && state !== 'loaded' && state !== 'main menu') {
     backTxt.display();
+    
+    hoverState = backTxt.checkHover();
   }
  }
 
@@ -140,9 +147,9 @@ function mousePressed(){
     images[imgIndex].click();
   }
 
-  if (state == 'hinge'){
+  if (state == 'hinge' && hoverState == false){
     // let index = floor(random(hingeData.length))
-    createHingeFlowers();
+     createHingeFlowers();
     // hingeData[index].create();
     // let newMatch = new Match(hingeMatches[index]);
     // newMatch.init();
@@ -153,7 +160,7 @@ function mousePressed(){
 
 // draw the flowers 
 function touchMoved() {
-  if (state == 'hinge'){
+  if (state == 'hinge'  && hoverState == false){
     createHingeFlowers();
   }
 }
@@ -162,27 +169,29 @@ function touchMoved() {
 function createHingeFlowers() {
   for (let i = matches.length - 1; i >= 0; i--) {
     if (matches[i].contains(mouseX, mouseY)) {
-      matches[i].changeState();
+      matches[i].handleClick();
       onABubble = true;
     }
   }
-  if (onABubble === false){
-      let index = floor(random(hingeMatches.length))
-      let newMatch = new Match(hingeMatches[index]);
-      newMatch.init();
-      matches.push(newMatch);
-      }
+  if (onABubble === false) {
+    console.log("create flower");
+    let index = floor(random(hingeMatches.length));
+    let newMatch = new Match(hingeMatches[index]);
+    matches.push(newMatch);
+  }
 }
 
 function handleHingeFlowers() {
+  onABubble = false; // Reset onABubble before handling matches
+
   for (let i = matches.length - 1; i >= 0; i--) {
     if (matches[i].contains(mouseX, mouseY)) {
-      matches[i].changeColor(200);
+      matches[i].handleHover();
       onABubble = true;
     } else {
-      matches[i].changeColor(255);
-      onABubble = false;
+      matches[i].handleHoverOutside();
     }
+
     if (matches[i].withered()) {
       matches.splice(i, 1);
     } else if (matches[i].filter()) {
@@ -193,5 +202,4 @@ function handleHingeFlowers() {
     }
   }
 }
-
 
