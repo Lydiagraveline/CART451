@@ -4,8 +4,12 @@ let imgIndex = 0; // the currently displayed image
 
 // Variables to store fetched data
 let hingeData = [];
+let hingeMatches = [];
+let matches = [];
 let images = [];
 let myUserData = [];
+
+let onABubble;// = false;
 
 // Interactive text objects
 let interactiveTexts = [];
@@ -31,6 +35,7 @@ async function preload() {
   try {
     // Fetch data and assign them to the variables
     hingeData = await fetchData('/hingeData', Match);
+    hingeMatches = await fetchData('/hingeData');
     images = await fetchData('/mediaData', ImageClass);
     myUserData = await fetchData('/userData');
 
@@ -85,6 +90,9 @@ function setup() {
   
     introTxt = new InteractiveText('For data you are, and to data you shall return', 
       width/2, height/2, 'word', changeStateToMain);
+    if (state !== 'loading'){
+      console.log("hingematches array ",hingeData);
+    }
   }
 
 // Draw function to display content based on the state
@@ -104,6 +112,10 @@ function draw(){
     hingeTxt.display();
   } else if (state == 'gallery') {
     images[imgIndex].display();
+  } else if (state == 'hinge') {
+    hingeData.forEach((match) =>{
+      match.display();
+    });
   }
 
   // Display "go back" text when the state is not loading, loaded, or main menu
@@ -127,7 +139,59 @@ function mousePressed(){
   if (state == 'gallery') {
     images[imgIndex].click();
   }
+
+  if (state == 'hinge'){
+    // let index = floor(random(hingeData.length))
+    createHingeFlowers();
+    // hingeData[index].create();
+    // let newMatch = new Match(hingeMatches[index]);
+    // newMatch.init();
+    // matches.push(newMatch);
+  }
 }
 
+
+// draw the flowers 
+function touchMoved() {
+  if (state == 'hinge'){
+    createHingeFlowers();
+  }
+}
+
+
+function createHingeFlowers() {
+  for (let i = matches.length - 1; i >= 0; i--) {
+    if (matches[i].contains(mouseX, mouseY)) {
+      matches[i].changeState();
+      onABubble = true;
+    }
+  }
+  if (onABubble === false){
+      let index = floor(random(hingeMatches.length))
+      let newMatch = new Match(hingeMatches[index]);
+      newMatch.init();
+      matches.push(newMatch);
+      }
+}
+
+function handleHingeFlowers() {
+  for (let i = matches.length - 1; i >= 0; i--) {
+    if (matches[i].contains(mouseX, mouseY)) {
+      matches[i].changeColor(200);
+      onABubble = true;
+    } else {
+      matches[i].changeColor(255);
+      onABubble = false;
+    }
+    if (matches[i].withered()) {
+      matches.splice(i, 1);
+    } else if (matches[i].filter()) {
+      matches.splice(i, 1);
+      mousePressed();
+    } else {
+      matches[i].display();
+    }
+  }
+}
 
 

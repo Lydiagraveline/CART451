@@ -18,21 +18,58 @@ class Match {
       this.state = "neutral"; // "sent like", "matched", 
       // this.img = loadImage('images/bug.png')//budImg;
       this.chatIndex = 0;
+
+
+      this.isDisplayed = false;
+    }
+
+
+    create() {
+      console.log("create hinge match")
+      this.isDisplayed = true;
+
+      if (this.like != false){
+        this.state = "likeStart"
+        this.text = "send like"
+       this.img = budImg;
+      } else if (this.like === false && this.matched != false ) {
+         this.state = "matched";
+         this.text = "match";
+          this.img = buddingImg;
+      } else if (this.like === false &&  this.matched === false ){
+       this.state = "filter";
+      }
+    }
+
+    display() {
+      if (this.state == "wither"){
+        this.wither();
+      }
+  
+      stroke(this.color);
+      strokeWeight(1);
+      fill(this.brightness, 125);
+      noFill();
+      rect(this.x, this.y, this.w, this.h)
+      ellipse(this.x, this.y, this.size * 2);
+  
+      noStroke();
+      // Displays the image at point (0, height/2) at half size
+      // image(this.img, this.x,this.y, this.w, this.h);
+      const offset = 20
+      this.text = this.state;
+   
+  
+      fill(this.color);
+      noStroke();
+      textWrap(CHAR);
+      textAlign(CENTER);
+      text(this.text, this.x, this.y, this.w );
     }
   
     init() {
       // console.log("init")
-       if (this.like != false){
-         this.state = "likeStart"
-         this.text = "send like"
-        this.img = budImg;
-       } else if (this.like === false && this.matched != false ) {
-          this.state = "matched";
-          this.text = "match";
-           this.img = buddingImg;
-       } else if (this.like === false &&  this.matched === false ){
-        this.state = "filter";
-       }
+
     }
   
     //on mouse click
@@ -153,29 +190,5 @@ class Match {
     }
     
   
-    display() {
-      if (this.state == "wither"){
-        this.wither();
-      }
-  
-      stroke(this.color);
-      strokeWeight(1);
-      fill(this.brightness, 125);
-      //noFill();
-      rect(this.x, this.y, this.w, this.h)
-      // ellipse(this.x, this.y, this.size * 2);
-  
-      noStroke();
-      // Displays the image at point (0, height/2) at half size
-      image(this.img, this.x,this.y, this.w, this.h);
-      //const offset = 20
-      // this.text = this.state;
-   
-  
-      fill(this.color);
-      noStroke();
-      textWrap(CHAR);
-      textAlign(CENTER);
-      text(this.text, this.x, this.y, this.w );
-    }
+
   }
