@@ -1,64 +1,57 @@
-//main.js
-let state = 'loading' //can be loading, loaded
-let imgIndex = 0 //the currently displayed image
-// variables to store fetched data
+// Define the initial state and image index
+let state = 'loading'; // can be loading, loaded, main, gallery, hinge
+let imgIndex = 0; // the currently displayed image
+
+// Variables to store fetched data
 let hingeData = [];
-let instagramData = [];
 let images = [];
 let myUserData = [];
 
+// Interactive text objects
 let interactiveTexts = [];
-
-//typewriter
- var index = 0
- var lastMillis = 0;
-
- let displayedTextIndex = 1;
+let introTxt, backTxt, hingeTxt, galleryTxt;
 
 // Function to fetch data from the server
 async function fetchData(path, className) {
-    try {
-        const response = await fetch(path);
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const result = await response.json();
-          const classObject = createClassObj(result, className);
-          console.log(classObject);
-          return classObject; //return the data as an object
-      } catch (error) {
-        console.error('Error fetching hinge data:', error);
-        return [];
-      }
+  try {
+    const response = await fetch(path);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const result = await response.json();
+    return createClassObj(result, className);
+  } catch (error) {
+    console.error(`Error fetching data from ${path}:`, error);
+    return [];
   }
+}
 
-//preload the data & media
-async function preload(){
-   try {
+// Preload the data & media
+async function preload() {
+  try {
     // Fetch data and assign them to the variables
     hingeData = await fetchData('/hingeData', Match);
-    // instagramData = await fetchData('/instagramData', Instagram);
     images = await fetchData('/mediaData', ImageClass);
     myUserData = await fetchData('/userData');
-    // change the state once data is fetch
-    state = "loaded"
-    setup(); //cal setup again
-} catch (error) {
+
+    // Set the state once data is fetched
+    state = "loaded";
+
+    // Call setup function again 
+    setup();
+  } catch (error) {
     console.error('Error during preload:', error);
-}
+  }
 }
 
-function createClassObj(result, className){
-    if(result && className){ //wait for the data to be fetched, and for the class to be defined
-        let array = [];
-        for(let i=0; i<result.length; i++){ 
-         array.push(new className(result[i]));
-        }
-         return array;
-    } else {
-        console.log("class not defined");
-        return result; //return the original result if no class was given 
-    }
+// Function to create class objects from fetched data
+function createClassObj(result, className) {
+  if (result && className) {
+    return result.map(item => new className(item));
+  } else {
+    console.log("class not defined");
+    return result;
+  }
 }
 
 //set up
@@ -66,147 +59,70 @@ function setup() {
     createCanvas(windowWidth, windowHeight);
     imageMode(CENTER);
     textAlign(CENTER, CENTER);
-    if(state == "loaded"){
-      interactiveTexts.push(new InteractiveText('For data you are, and to data you shall return', 
-      width/2, height/2, 
-      'word', 
-      () => {
-        interactiveTexts.splice(0, 1);
-        cursor(ARROW)
+    backTxt = new InteractiveText('go back', 50, 50, "word", () => {
+      console.log('Changing state to loaded');
+      state = 'main';
+    });
+  
+    hingeTxt = new InteractiveText('hinge', 50, 50, "letter", () => {
+      if (state == "main") {
+        state = "hinge";
+      }
+    });
+  
+    galleryTxt = new InteractiveText('gallery', 50, 100, "letter", () => {
+      if (state == "main") {
+        state = "gallery";
+      }
+    });
+  
+    introTxt = new InteractiveText('For data you are, and to data you shall return', 
+      width/2, height/2, 'word', () => {
         state = 'main';
-        let text = 'name: Lydia \n last name: Graveline';
-          createInteractiveText(text, width/2, height/2 - 25, ()=>{
-          if (displayedTextIndex <interactiveTexts.length ){
-            displayedTextIndex += 1;
-          }
-          
-           state = "test"
-        });
-        let y = 100;
-        let x = 100;
-        for(let i=0; i < myUserData.length; i++){
-          let nameObject = myUserData[i].name;
-          let nameString = JSON.stringify(nameObject, null, 2);
-          createInteractiveText(myUserData[i].source, x, y, ()=>{
-            //console.log("hi");
-          });
-          x += 100;
-       }
-      
-        console.log("hi")
-    
-      }))
-    }
+      });
   }
 
-//draw
+// Draw function to display content based on the state
 function draw(){
-     background(245);
-    // text(state, width/2, height/2 - 10);
-    if (state == 'loading'){
-        text('loading data...', width/2, height/2 + 200);
-        
-    } else if(state == 'loaded' ){
-      for(let i=0; i < displayedTextIndex; i++){
-         interactiveTexts[0].display();
-      }
-    } else if(state == 'main' ){
-      text (state, 20, 20);
-      for(let i=0; i < displayedTextIndex; i++){
-        interactiveTexts[i].display();
-     }
+  background(245);
 
-    }else if(state == 'gallery' ){
-      images[imgIndex].display();
-    }
+  // Display the current state at the top of the canvas
+  text(state, width/2 , 50);
+  
+  // Display content based on the current state
+  if (state == 'loading') {
+    text('loading data...', width/2, height/2 + 200);
+  } else if (state == 'loaded') {
+    introTxt.display();
+  } else if (state == 'main') {
+    galleryTxt.display();
+    hingeTxt.display();
+  } else if (state == 'gallery') {
+    images[imgIndex].display();
+  }
+
+  // Display "go back" text when the state is not loading, loaded, or main
+  if (state !== 'loading' && state !== 'loaded' && state !== 'main') {
+    backTxt.display();
+  }
  }
 
-function createInteractiveText(string, x, y, callback){
-  // console.log(string);
-  let newText = new InteractiveText(
-    string,
-    x,
-    y,
-    'typewriter',
-    callback
-  );
-  interactiveTexts.push(newText);
-}
-
-
 function mousePressed(){
-  images[imgIndex].mousePressed();
-
-  if(state == 'main'){
+  // Handle clicks based on the current state
+  if (state == "loaded") {
+    introTxt.click();
+  } else if (state == "main") {
+    galleryTxt.click();
+    hingeTxt.click();
+  } else if (state !== 'loading' && state !== 'loaded' && state !== 'main') {
+    backTxt.click();
   }
 
-  for(let i=0; i < interactiveTexts.length; i++){
-    interactiveTexts[i].click();
+  // Handle clicks on images when the state is 'gallery'
+  if (state == 'gallery') {
+    images[imgIndex].click();
   }
 }
 
 
-class InteractiveText {
-  constructor(text, x, y, typeMethod, callback) {
-    this.text = text;
-    this.x = x;
-    this.y = y;
-    this.fontSize = 16;
-    this.textColor = color(0);
-    this.callback = callback;
-    this.typeMethod = typeMethod; // can be 'typewriter' '
-    this.typingIndex = 0;
-    this.lastMillis = 0;
-  }
-
-  display() {
-    push();
-    if (this.isCursorOverText()) {
-      this.textColor = 'magenta';
-      cursor('grab');
-    } else {
-      cursor(ARROW);
-      this.textColor =  color(0);
-    }
-    fill(this.textColor);
-       if(this.typeMethod == "typewriter" || this.typeMethod == "word") {
-        this.typeWriter(this.text);
-      } else {
-        text(this.text, this.x, this.y);
-      }
-    pop();
-  }
-
-  isCursorOverText() {
-    // Check if the cursor is within the bounding box of the text
-    return mouseX > this.x - textWidth(this.text) / 2 &&
-           mouseX < this.x + textWidth(this.text) / 2 &&
-           mouseY > this.y - this.fontSize / 2 &&
-           mouseY < this.y + this.fontSize / 2;
-  }
-
-  click(){
-    if (this.callback){
-      this.callback();
-    }
-  
-  }
-  
-  //https://editor.p5js.org/cfoss/sketches/SJggPXhcQ
-  typeWriter(message){
-  text(message.substring(0, this.typingIndex ), this.x, this.y);
-	if (millis() > this.lastMillis + 200) {
-		this.typingIndex = this.typingIndex  + 1;
-		//ONE WORD AT A TIME
-    if (this.typeMethod == "word") {
-		while(message.charAt(	this.typingIndex ) != ' ' &&
-    this.typingIndex  < message.length){
-      this.typingIndex = 	this.typingIndex + 1;
-		}
-  }
-		this.lastMillis = millis();
-	}
-}
-
-}
 

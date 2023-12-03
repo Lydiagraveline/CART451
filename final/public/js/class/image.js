@@ -31,7 +31,7 @@ class ImageClass{
          return date
     }
 
-    mousePressed(){
+    click(){
         if (imgIndex < images.length - 1){
           if (mouseX > width/2){
             imgIndex++
