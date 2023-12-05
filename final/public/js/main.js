@@ -53,6 +53,8 @@ async function preload() {
     console.log(inferences)
 
     magneticPoetry = new Magnets(lydiaMessages);
+
+  
     // magneticPoetry.setup();
     // instagramData  = await fetchData('/instagramData', Instagram);
     //console.log(instagramData);
@@ -123,7 +125,8 @@ function setup() {
     instagramTxt = new InteractiveText('instagram', 50, 200, 'word');
     inferencesTxt = new InteractiveText('inferences', 50, 250, 'word');
     // instagramData.setup();
-  
+
+
     introTxt = new InteractiveText('For data you are, and to data you shall return', 
       width/2, height/2, 'word', changeStateToMain);
     if (state !== 'loading'){
@@ -167,7 +170,7 @@ function draw(){
      textAlign(LEFT);
     magneticPoetry.draw();
   }  else if (state == 'inference'){
-    inferences.draw();
+    inferences[1].draw();
   }
 
   // Display "go back" text when the state is not loading, loaded, or main menu
