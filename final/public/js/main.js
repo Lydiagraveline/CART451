@@ -10,6 +10,7 @@ let index = 0;
 let images = [];
 let myUserData = [];
 let  instagramData  = [];
+let  inferences  = [];
 let magneticPoetry;
 
 let hoverState;
@@ -20,7 +21,7 @@ let onABubble = false;
 
 // Interactive text objects
 let interactiveTexts = [];
-let introTxt, backTxt, hingeTxt, galleryTxt, inferencesTxt;
+let introTxt, backTxt, hingeTxt, galleryTxt, instagramTxt, inferencesTxt;
 
 // Function to fetch data from the server
 async function fetchData(path, className) {
@@ -48,6 +49,8 @@ async function preload() {
     images = await fetchData('/mediaData', ImageClass);
     myUserData = await fetchData('/userData');
     lydiaMessages = await fetchData('/instagramData');
+    inferences = await fetchData('/inferences', Inferences);
+    console.log(inferences)
 
     magneticPoetry = new Magnets(lydiaMessages);
     // magneticPoetry.setup();
@@ -102,10 +105,10 @@ function changeStateToGallery() {
   }
 }
 
-function changeStateToInferences() {
+function changeStateToinstagram() {
   if (state === 'main menu') {
-    console.log('Changing state to inferences');
-    state = 'inferences';
+    console.log('Changing state to instagram');
+    state = 'instagram';
   }
 }
 
@@ -117,12 +120,8 @@ function setup() {
     backTxt = new InteractiveText('go back', 50, 50, 'word', changeStateToMain);
     hingeTxt = new InteractiveText('hinge', 50, 100, 'word');
     galleryTxt = new InteractiveText('gallery', 50, 150, 'word');
-    inferencesTxt = new InteractiveText('inferences', 50, 200, 'word');
-
-   
-
-
-
+    instagramTxt = new InteractiveText('instagram', 50, 200, 'word');
+    inferencesTxt = new InteractiveText('inferences', 50, 250, 'word');
     // instagramData.setup();
   
     introTxt = new InteractiveText('For data you are, and to data you shall return', 
@@ -150,6 +149,7 @@ function draw(){
     textAlign(LEFT);
     galleryTxt.display();
     hingeTxt.display();
+    instagramTxt.display();
     inferencesTxt.display();
     pop();
 
@@ -163,11 +163,11 @@ function draw(){
     images[imgIndex].display();
   } else if (state == 'hinge') {
     handleHingeFlowers();
-  } else if (state == 'inferences'){
-    // noLoop();
-    textAlign(LEFT);
+  } else if (state == 'instagram'){
+     textAlign(LEFT);
     magneticPoetry.draw();
-
+  }  else if (state == 'inference'){
+    inferences.draw();
   }
 
   // Display "go back" text when the state is not loading, loaded, or main menu
@@ -189,6 +189,9 @@ function mousePressed(){
     hingeTxt.click(()=>{
       state = "hinge";
     });
+    instagramTxt.click(()=>{
+      state = "instagram";
+    });
     inferencesTxt.click(()=>{
       state = "inferences";
     });
@@ -205,7 +208,7 @@ function mousePressed(){
      createHingeFlowers();
   }
 
-  if (state == 'inferences' && hoverState == false){
+  if (state == 'instagram' && hoverState == false){
     magneticPoetry.mousePressed();
   }
 }
@@ -232,7 +235,7 @@ function doubleClicked() {
 
 function keyPressed() {
   
-  if( state == 'inferences') {
+  if( state == 'instagram') {
     magneticPoetry.keyPressed();
     if ( key === 'f') {
       console.log("f")

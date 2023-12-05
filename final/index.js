@@ -198,6 +198,10 @@ app.get('/userData', async (req, res) => {
   await fetchDataFromCollection(res, 'user');
 });
 
+app.get('/inferences', async (req, res) => {
+  await fetchDataFromCollection(res, 'inferences');
+})
+
 
 app.listen(portNumber, () => {
   console.log("Server is running on port "+portNumber);
