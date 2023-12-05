@@ -12,7 +12,9 @@ class AllMatches {
         this.yOffset = random(-5, 5);
     }
 
+ 
     display() {
+     push();
     stroke(this.color);
     strokeWeight(1);
     noFill();
@@ -29,6 +31,7 @@ class AllMatches {
     textWrap(CHAR);
     textAlign(CENTER);
     text(this.text, this.x, this.y+this.yOffset, this.w );
+    pop();
     }
 
   }

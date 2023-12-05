@@ -9,11 +9,14 @@ let matches = [];
 let index = 0;
 let images = [];
 let myUserData = [];
+let  instagramData  = [];
 let magneticPoetry;
 
 let hoverState;
 
 let onABubble = false;
+
+//images
 
 // Interactive text objects
 let interactiveTexts = [];
@@ -27,6 +30,8 @@ async function fetchData(path, className) {
       throw new Error('Network response was not ok');
     }
     const result = await response.json();
+    // console.log(path, result);
+    //console.log(result)
     return createClassObj(result, className);
   } catch (error) {
     console.error(`Error fetching data from ${path}:`, error);
@@ -40,14 +45,20 @@ async function preload() {
     // Fetch data and assign them to the variables
     hingeData = await fetchData('/hingeData', AllMatches);
     hingeMatches = await fetchData('/hingeData');
-    console.log(hingeMatches);
     images = await fetchData('/mediaData', ImageClass);
     myUserData = await fetchData('/userData');
+    lydiaMessages = await fetchData('/instagramData');
+
+    magneticPoetry = new Magnets(lydiaMessages);
+    // magneticPoetry.setup();
+    // instagramData  = await fetchData('/instagramData', Instagram);
+    //console.log(instagramData);
 
     // Set the state once data is fetched
     state = "loaded";
 
     // Call setup function again 
+    
     setup();
   } catch (error) {
     console.error('Error during preload:', error);
@@ -59,7 +70,7 @@ function createClassObj(result, className) {
   if (result && className) {
     return result.map(item => new className(item));
   } else {
-    console.log("class not defined");
+    // console.log("class not defined");
     return result;
   }
 }
@@ -108,13 +119,16 @@ function setup() {
     galleryTxt = new InteractiveText('gallery', 50, 150, 'word');
     inferencesTxt = new InteractiveText('inferences', 50, 200, 'word');
 
-    magneticPoetry = new Magnets();
-    console.log(magneticPoetry);
-    magneticPoetry.setup();
+   
+
+
+
+    // instagramData.setup();
   
     introTxt = new InteractiveText('For data you are, and to data you shall return', 
       width/2, height/2, 'word', changeStateToMain);
     if (state !== 'loading'){
+      // magneticPoetry.setup();
       //console.log("hingematches array ",hingeData);
     }
   }
@@ -217,7 +231,22 @@ function doubleClicked() {
 }
 
 function keyPressed() {
-  magneticPoetry.keyPressed();
+  
+  if( state == 'inferences') {
+    magneticPoetry.keyPressed();
+    if ( key === 'f') {
+      console.log("f")
+      magneticPoetry.setFilterOption('frequency');
+    }else if (key === 't') {
+      console.log("t")
+      magneticPoetry.setFilterOption('tfidf');
+    }
+  }
+      // Example: Change filter option to 'frequency' when the user presses 'f'
+     
+  
+      // Example: Change filter option to 'tfidf' when the user presses 't'
+      
 }
 
 

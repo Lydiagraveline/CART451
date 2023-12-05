@@ -16,9 +16,25 @@ class Match {
       this.met = match.we_met || false
       this.text;
       this.state = "neutral"; // "sent like", "matched", 
-      // this.img = loadImage('images/bug.png')//budImg;
+      this.budImg; // = loadImage('media/hingeFlowers/bud.png')//budImg;
+      this.buddingImg; // = loadImage('media/hingeFlowers/budding.png')//budImg;
+      this.flower2img; // = loadImage('media/hingeFlowers/flower.png')
+      this.flowerimg; // = loadImage('media/hingeFlowers/fullflower.png')
+      this.witheredimg; // =  loadImage('media/hingeFlowers/withered.png')
+      this.img //= //loadImage('images/bug.png')//budImg;
       this.chatIndex = 0;
+      this.preloadIMGs();
       this.init();
+    }
+
+    preloadIMGs(){
+      this.budImg = loadImage('media/hingeFlowers/bud.png')//budImg;
+      this.buddingImg = loadImage('media/hingeFlowers/budding.png')//budImg;
+      this.flower2img = loadImage('media/hingeFlowers/flower.png')
+      this.flowerimg = loadImage('media/hingeFlowers/fullflower.png')
+      this.witheringimg =  loadImage('media/hingeFlowers/withering.png')
+      this.witheredimg =  loadImage('media/hingeFlowers/withered.png')
+      this.img = this.budImg;
     }
   
     init() {
@@ -26,13 +42,16 @@ class Match {
        if (this.like != false){
          this.state = "likeStart"
          this.text = "send like"
-        // this.img = budImg;
+         this.img = this.budImg;
        } else if (this.like === false && this.matched != false ) {
           this.state = "matched";
           this.text = "match";
-          //  this.img = buddingImg;
+          this.img = this.buddingImg;
        } else if (this.like === false &&  this.matched === false ){
-        this.state = "filter";
+        // this.state = "filter";
+        this.state = "t";
+        this.text = "no like no match";
+        this.img = this.witheredimg;
        }
     }
   
@@ -43,8 +62,7 @@ class Match {
         if (this.matched != false){ /// THEY LIKED ME! WE MATCH 
           this.state = "matched";
           this.text = "they like me"
-          // this.img = flower2img;
-          // this.img = buddingImg;
+           this.img = this.buddingImg;
         } else if (this.matched === false){ /// THEY DIDN'T LIKE ME BACK
           this.state = "wither";
           this.text = "didn't like me"
@@ -63,13 +81,14 @@ class Match {
       }
     }
       else if ( this.state === "chatting"){
-        // this.img = flowerimg;
+         this.img = this.flowerimg;
         const body = this.chats[this.chatIndex].body;
         this.text = body;
         // console.log(this.chats);
         this.chatIndex += 1;
   
         if (this.chatIndex >= this.chats.length) {
+          this.img = this.witheringimg;
           this.state = "nomorechats";
           this.text = "did we meet?";
            this.chatIndex = 0; // Reset the index for the next cycle
@@ -84,7 +103,7 @@ class Match {
       } else {
         this.state = "we met"
         this.text = "yes";
-        // this.img = flower2img;
+        this.img = this.flower2img;
       }
      }
   
@@ -118,14 +137,14 @@ class Match {
   
     changeColor(bright) {
        this.brightness = bright;
-      //this.img = flowerimg;
+      //this.img = this.flowerimg;
     }
   
 
   
     // end of the hinge match lifecycle
     wither(){
-      // this.img = witheredimg;
+     this.img = this.witheredimg;
     this.size -= 0.5;
     this.w -= 0.5;
     this.h -= 0.5;
@@ -169,6 +188,7 @@ class Match {
         this.wither();
       }
   
+       push();
       stroke(this.color);
       strokeWeight(1);
       fill(this.brightness, 125);
@@ -180,8 +200,9 @@ class Match {
        
   
       noStroke();
+      imageMode(CORNER);
       // Displays the image at point (0, height/2) at half size
-      // image(this.img, this.x,this.y, this.w, this.h);
+       image(this.img, this.x,this.y, this.w, this.h);
       //const offset = 20
       // this.text = this.state;
    
@@ -191,5 +212,6 @@ class Match {
       textWrap(CHAR);
       textAlign(CENTER);
       text(this.text, this.x, this.y, this.w );
+       pop();
     }
   }
